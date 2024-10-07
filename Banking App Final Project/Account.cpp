@@ -1,11 +1,11 @@
-#include Account.h
+#include "Account.h"
+#include <string>
 using namespace std;
-#include string
 
 
 Account::Account(string x, double y) {
 	accountNum = x;
-	initialBal = y;
+	balance = y;
 
 
 	void withdraw(double Amount) {
