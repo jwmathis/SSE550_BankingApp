@@ -127,7 +127,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Account.cpp" />
     <ClCompile Include="Banking App Final Project.cpp" />
+    <ClCompile Include="Customer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Account.h" />
