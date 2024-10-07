@@ -2,7 +2,7 @@
 class Account {
 private:
 	string accountNum;
-	double initialBal;
+	double balance;
 
 public:
 	Account(string x, double y);

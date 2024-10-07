@@ -19,12 +19,8 @@ int main() {
 	const int Close_Account = 6;
 	const int EXIT = 7;
 
-	string	userName, password, firstName, lastName, Status;
-	int fileStat, numDep;
-	double income, currMon;
-	char option[1];
-	bool userInput;
-	double* bracket;
+	string	userName, password, firstName, lastName, status;
+	int userInput;
 	//--------------------------------------------------------------------------------------
 
 	cout << "*************** Hello, Welcome to MercerMoney! ***************\n\n";

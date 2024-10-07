@@ -9,11 +9,11 @@ Account::Account(string x, double y) {
 
 
 	void withdraw(double Amount) {
-		initialBal = initialBal - Amount;
+		balance = balance - Amount;
 	}
 
 	void deposit(double Amount) {
-		initialBal = initialBal + Amount;
+		balance = balance + Amount;
 	}
 
 	string getAccountNum() {
@@ -21,6 +21,6 @@ Account::Account(string x, double y) {
  	}
 
 	double getBalance() {
-		return initialBal;
+		return balance;
 	}
 }
