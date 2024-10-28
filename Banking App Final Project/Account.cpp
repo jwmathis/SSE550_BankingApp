@@ -2,6 +2,10 @@
 #include <string>
 using namespace std;
 
+Account::Account()
+{
+	//empty constructor
+}
 
 Account::Account(string x, double y) {
 	accountNum = x;
