@@ -1,5 +1,7 @@
 #include <iostream>
 #include "Transfer.h"
+#include "Account.h"
+#include "Customer.h"
 
 using namespace std;
 

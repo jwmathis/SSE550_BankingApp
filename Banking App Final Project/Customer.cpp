@@ -1,6 +1,7 @@
 #include "Customer.h"
 #include <iostream>
 
+Customer::Customer() : name("") {}
 Customer::Customer(string id, string name) 
 	: customerId(id), name(name) {}
 
@@ -12,7 +13,7 @@ void Customer::openAccount(string accountNumber, double initialBalance) {
 
 Account* Customer::getAccount(string accountNumber) {
 	for (auto& account : accounts) {
-		if (account.getAccountNumber() == accountNumber) {
+		if (account.getAccountNum() == accountNumber) {
 			return &account;
 		}
 	}

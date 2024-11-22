@@ -12,6 +12,7 @@ private:
 	vector<Account> accounts;
 
 public:
+	Customer();
 	Customer(string id, string name);
 
 	void openAccount(string accountNumber, double initialBalance);

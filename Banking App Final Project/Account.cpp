@@ -1,30 +1,34 @@
 #include "Account.h"
 #include <string>
+#include <iostream>
+
 using namespace std;
 
-Account::Account()
-{
-	//empty constructor
+Account::Account() : accountNum(""), balance(0.0) {}
+
+Account::Account(string accNum, double initialBalance) {
+	accountNum = accNum;
+	balance = initialBalance;
 }
 
-Account::Account(string x, double y) {
-	accountNum = x;
-	balance = y;
+void Account::withdraw(double Amount) {
+	balance = balance - Amount;
+	cout << "Withdrew " << Amount << ". New Balance: " << balance << endl;
+}
 
+void Account::deposit(double Amount) {
+	balance = balance + Amount;
+	cout << "Deposited " << Amount << ". New Balance: " << balance << endl;
+}
 
-	void withdraw(double Amount) {
-		balance = balance - Amount;
-	}
+string Account::getAccountNum() const {
+	return accountNum;
+}
 
-	void deposit(double Amount) {
-		balance = balance + Amount;
-	}
+double Account::getBalance() const {
+	return balance;
+}
 
-	string getAccountNum() {
-		return accountNum;
- 	}
-
-	double getBalance() {
-		return balance;
-	}
+void Account::setBalance(double newBalance) {
+	balance = newBalance;
 }
