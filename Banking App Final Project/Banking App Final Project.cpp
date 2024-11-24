@@ -9,14 +9,39 @@
 #include "Transfer.h"
 
 using namespace std;
-
-
-int main() {
 	/*TODO:
 	1. Use Constants/enums for menu options to avoid duplications and to make code easier to update
 	2. Make functions for repetitive blocks like register and login and the customer menus
 	3. Potentially add validation for inputs to aavoid breaking program
 	4. Clean up else if chains by using switch case*/
+
+// Enums for menu options
+enum MainMenuOption {
+	REGISTER = 1,
+	LOGIN,
+	EXIT
+};
+
+enum CustomerMenuOption {
+	NEW_ACCOUNT = 1,
+	VIEW_ACCOUNTS,
+	DEPOSIT_AMOUNT,
+	WITHDRAW_AMOUNT,
+	TRANSFER_AMOUNT,
+	EXIT
+};
+
+// Constants
+const string WELCOME_MESSAGE = "Welcome to Mercer Money Banking!";
+const string INVALID_OPTION = "Invalid option. Please try again.";
+
+// Functions for modularization
+void registerCustomer(Bank& bank);
+void loginCustomer(Bank& bank);
+void customerMenu(Customer* customer);
+
+int main() {
+
 	//--------------------------------------------------------------------------------------
 	//  Constant Declaration:
 
