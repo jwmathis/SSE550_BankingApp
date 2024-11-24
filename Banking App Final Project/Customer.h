@@ -19,4 +19,6 @@ public:
 	Account* getAccount(string accountNumber);
 	string getCustomerId() const;
 	string getName() const;
+
+	const vector<Account>& getAccounts() const { return accounts; }
 };

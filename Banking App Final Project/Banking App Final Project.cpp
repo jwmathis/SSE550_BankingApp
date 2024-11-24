@@ -60,8 +60,103 @@ int main() {
 			}
 			cout << "Welcome, " << customer->getName() << "!" << endl;
 			//Add menu for other actions after login: 1. Open account, 2. View Account, 3. Deposit, 4. Withdraw, 5. Transfer Funds, 6. Logout
-			while (true)
+			while (true) {
+				cout << "\nCustomer Menu:\n";
+				cout << "1. Open Account\n";
+				cout << "2. View Account\n";
+				cout << "3. Deposit\n";
+				cout << "4. Withdraw\n";
+				cout << "5. Transfer Funds\n";
+				cout << "6. Logout\n";
+				cout << "Enter your choice: ";
+				cin >> input;
+
+				if (input == "1") {
+					string accountNumber;
+					double initialBalance;
+					cout << "Enter new account number: ";
+					cin >> accountNumber;
+					cout << "Enter initial balance: ";
+					cin >> initialBalance;
+					customer->openAccount(accountNumber, initialBalance);
+				}
+				else if (input == "2") {
+					cout << "Accounts:\n";
+					for (const auto& account : customer->getAccounts()) {
+						cout << "Account Number: " << account.getAccountNum() << ", Balance: " << account.getBalance() << endl;
+					}
+				}
+				else if (input == "3") {
+					string accountNumber;
+					double amount;
+					cout << "Enter account number: ";
+					cin >> accountNumber;
+					Account* account = customer->getAccount(accountNumber);
+					if (account) {
+						cout << "Enter amount to deposit: ";
+						cin >> amount;
+						account->deposit(amount);
+					}
+					else {
+						cout << "Account not found." << endl;
+					}
+				}
+				else if (input == "4") {
+					string accountNumber;
+					double amount;
+					cout << "Enter account number: ";
+					cin >> accountNumber;
+					Account* account = customer->getAccount(accountNumber);
+					if (account) {
+						cout << "Enter amount to withdraw: ";
+						cin >> amount;
+						account->withdraw(amount);
+					}
+					else {
+						cout << "Account not found." << endl;
+					}
+				}
+				else if (input == "5") {
+					string fromAccount, toAccount;
+					double amount;
+					cout << "Enter sender account number: ";
+					cin >> fromAccount;
+					cout << "Enter reciever account number: ";
+					cin >> toAccount;
+
+					Account* sender = customer->getAccount(fromAccount);
+					Account* receiver = customer->getAccount(toAccount);
+
+					if (sender && receiver) {
+						cout << "Enter amount to transfer: ";
+						cin >> amount;
+
+						if (sender->getBalance() >= amount) {
+							Transfer transfer(*sender, *receiver);
+							transfer.setAmount(amount);
+							sender->withdraw(amount);
+							receiver->deposit(amount);
+							cout << "Transfer successful!" << endl;
+						}
+						else {
+							cout << "Insufficient funds in sender's account.";
+						}
+					}
+					else {
+						cout << "invlaid account numbers." << endl;
+					}
+				}
+
+				else if (input == "6") {
+					cout << "Logged out." << endl;
+				}
+				else {
+					cout << "Invalid choice. Please try again." << endl;
+					break;
+				}
+			}
 		}
+
 		else if (input == "3") {
 			cout << "Goodbye!" << endl;
 			break;
