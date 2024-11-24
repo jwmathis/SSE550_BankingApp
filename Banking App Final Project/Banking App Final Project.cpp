@@ -12,7 +12,11 @@ using namespace std;
 
 
 int main() {
-
+	/*TODO:
+	1. Use Constants/enums for menu options to avoid duplications and to make code easier to update
+	2. Make functions for repetitive blocks like register and login and the customer menus
+	3. Potentially add validation for inputs to aavoid breaking program
+	4. Clean up else if chains by using switch case*/
 	//--------------------------------------------------------------------------------------
 	//  Constant Declaration:
 
