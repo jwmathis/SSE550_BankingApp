@@ -1,9 +1,9 @@
 #include "Bank.h"
 #include <iostream>
 
-void Bank::registerCustomer(const string& id, const string& name) {
-	if (customers.find(id) == customers.end()) {
-		customers[id] = Customer(id, name);
+void Bank::registerCustomer(const string& pin, const string& name) {
+	if (customers.find(pin) == customers.end()) {
+		customers[pin] = Customer(pin, name);
 		cout << "Customer " << name << " registered successfully!" << endl;
 	}
 	else {
@@ -11,8 +11,8 @@ void Bank::registerCustomer(const string& id, const string& name) {
 	}
 }
 
-Customer* Bank::login(const string& customerId) {
-	auto it = customers.find(customerId);
+Customer* Bank::login(const string& pin) {
+	auto it = customers.find(pin);
 	if (it != customers.end()) {
 		return &it->second;
 	}
