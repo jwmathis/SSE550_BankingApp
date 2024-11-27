@@ -11,6 +11,6 @@ private:
 
 public:
 	void registerCustomer(const string& pin, const string& name);
-	Customer* login(const string& pin);
+	Customer* login(const string& pin, const string& name);
 };
 

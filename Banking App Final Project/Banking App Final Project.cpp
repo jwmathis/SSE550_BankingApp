@@ -250,13 +250,18 @@ void registerCustomer(Bank& bank) {
 }
 
 void loginCustomer(Bank& bank) {
-	string pin;
+	string pin, name;
+
+	cout << "Enter your name: ";
+	cin.ignore();
+	getline(cin, name);
+
 	cout << "Enter your PIN to login: ";
 	cin >> pin;
 
-	Customer* customer = bank.login(pin);
+	Customer* customer = bank.login(pin, name);
 	if (!customer) {
-		cout << "Login failed. Customer not found." << endl;
+		cout << "Login failed. Invalid Name or PIN." << endl;
 		return;
 	}
 

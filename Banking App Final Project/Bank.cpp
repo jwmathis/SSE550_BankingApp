@@ -7,14 +7,14 @@ void Bank::registerCustomer(const string& pin, const string& name) {
 		cout << "Customer " << name << " registered successfully!" << endl;
 	}
 	else {
-		cout << "Customer ID already exists." << endl;
+		cout << "Error: PIN is already associated with this name. Choose a different pin." << endl;
 	}
 }
 
-Customer* Bank::login(const string& pin) {
+Customer* Bank::login(const string& pin, const string& name) {
 	auto it = customers.find(pin);
-	if (it != customers.end()) {
-		return &it->second;
+	if (it != customers.end() && it->second.getName() == name) {
+		return &it->second; // Login successful
 	}
-	return nullptr;
+	return nullptr; // Login failed
 }
