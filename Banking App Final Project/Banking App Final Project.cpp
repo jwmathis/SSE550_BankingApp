@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <string>
+#include <algorithm>
 #include "Bank.h"
 #include "Customer.h"
 #include "Account.h"
@@ -234,20 +235,26 @@ int main() {
 // Function declarations
 
 void registerCustomer(Bank& bank) {
-	string id, name;
-	cout << "Enter Customer ID: ";
-	cin >> id;
+	string pin, name;
+	cout << "Enter a 4-digit PIN for account registration: ";
+	cin >> pin;
+	if (pin.length() != 4 || !all_of(pin.begin(), pin.end(), ::isdigit)) {
+		cout << "Error: PIN must be exactly 4 digits." << endl;
+		return;
+	}
+
 	cout << "Enter your name: ";
-	cin >> name;
-	bank.registerCustomer(id, name);
+	cin.ignore(); // Error handling to allow any name to be entered
+	getline(cin, name);
+	bank.registerCustomer(pin, name);
 }
 
 void loginCustomer(Bank& bank) {
-	string id;
-	cout << "Enter your customer ID: ";
-	cin >> id;
+	string pin;
+	cout << "Enter your PIN to login: ";
+	cin >> pin;
 
-	Customer* customer = bank.login(id);
+	Customer* customer = bank.login(pin);
 	if (!customer) {
 		cout << "Login failed. Customer not found." << endl;
 		return;
