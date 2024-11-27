@@ -7,18 +7,21 @@ using namespace std;
 
 class Customer {
 private:
+	string name; // Customer name for accounts
+	string username; // Username for login
 	string pin; //replaced customerID with a PIN for authentication
-	string name;
 	vector<Account> accounts;
 
 public:
 	Customer();
-	Customer(string pin, string name);
+	Customer(string name, string username, string pin);
 
 	void openAccount(string accountNumber, double initialBalance);
 	Account* getAccount(string accountNumber);
-	string getPin() const;
+
 	string getName() const;
+	string getUsername() const;
+	string getPin() const;
 
 	const vector<Account>& getAccounts() const { return accounts; }
 };

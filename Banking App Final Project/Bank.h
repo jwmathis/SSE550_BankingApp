@@ -10,7 +10,7 @@ private:
 	unordered_map<string, Customer> customers;
 
 public:
-	void registerCustomer(const string& pin, const string& name);
-	Customer* login(const string& pin, const string& name);
+	void registerCustomer(const string& name, const string& username, const string& pin);
+	Customer* login(const string& username, const string& pin);
 };
 

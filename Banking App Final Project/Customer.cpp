@@ -1,9 +1,9 @@
 #include "Customer.h"
 #include <iostream>
 
-Customer::Customer() : name("") {}
-Customer::Customer(string pin, string name) 
-	: pin(pin), name(name) {}
+Customer::Customer() : name(""), username(""), pin("") {}
+Customer::Customer(string name, string username, string pin) 
+	: name(name), username(username), pin(pin) {}
 
 void Customer::openAccount(string accountNumber, double initialBalance) {
 	Account newAccount(accountNumber, initialBalance); // create new Account object
@@ -20,10 +20,14 @@ Account* Customer::getAccount(string accountNumber) {
 	return nullptr;
 }
 
-string Customer::getPin() const {
-	return pin;
-}
-
 string Customer::getName() const {
 	return name;
+}
+
+string Customer::getUsername() const {
+	return username;
+}
+
+string Customer::getPin() const {
+	return pin;
 }

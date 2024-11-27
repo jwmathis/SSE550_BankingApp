@@ -235,7 +235,15 @@ int main() {
 // Function declarations
 
 void registerCustomer(Bank& bank) {
-	string pin, name;
+	string name, username, pin;
+	
+	cout << "Enter your full legal name: ";
+	cin.ignore(); // Error handling to allow any name to be entered
+	getline(cin, name);
+
+	cout << "Choose your username: ";
+	cin >> username;
+
 	cout << "Enter a 4-digit PIN for account registration: ";
 	cin >> pin;
 	if (pin.length() != 4 || !all_of(pin.begin(), pin.end(), ::isdigit)) {
@@ -243,25 +251,21 @@ void registerCustomer(Bank& bank) {
 		return;
 	}
 
-	cout << "Enter your name: ";
-	cin.ignore(); // Error handling to allow any name to be entered
-	getline(cin, name);
-	bank.registerCustomer(pin, name);
+	bank.registerCustomer(name, username, pin);
 }
 
 void loginCustomer(Bank& bank) {
-	string pin, name;
+	string username, pin;
 
-	cout << "Enter your name: ";
-	cin.ignore();
-	getline(cin, name);
+	cout << "Enter your username: ";
+	cin >> username;
 
-	cout << "Enter your PIN to login: ";
+	cout << "Enter your PIN: ";
 	cin >> pin;
 
-	Customer* customer = bank.login(pin, name);
+	Customer* customer = bank.login(username, pin);
 	if (!customer) {
-		cout << "Login failed. Invalid Name or PIN." << endl;
+		cout << "Login failed. Invalid username or PIN." << endl;
 		return;
 	}
 

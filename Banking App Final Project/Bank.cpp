@@ -1,19 +1,19 @@
 #include "Bank.h"
 #include <iostream>
 
-void Bank::registerCustomer(const string& pin, const string& name) {
-	if (customers.find(pin) == customers.end()) {
-		customers[pin] = Customer(pin, name);
-		cout << "Customer " << name << " registered successfully!" << endl;
+void Bank::registerCustomer(const string& name, const string& username, const string& pin) {
+	if (customers.find(username) == customers.end()) {
+		customers[username] = Customer(name, username, pin);
+		cout << "Customer " << name << " registered successfully! Your username is: " << username << endl;
 	}
 	else {
-		cout << "Error: PIN is already associated with this name. Choose a different pin." << endl;
+		cout << "Error: Username is already in use. Choose a different username." << endl;
 	}
 }
 
-Customer* Bank::login(const string& pin, const string& name) {
-	auto it = customers.find(pin);
-	if (it != customers.end() && it->second.getName() == name) {
+Customer* Bank::login(const string& username, const string& pin) {
+	auto it = customers.find(username);
+	if (it != customers.end() && it->second.getPin() == pin) {
 		return &it->second; // Login successful
 	}
 	return nullptr; // Login failed
