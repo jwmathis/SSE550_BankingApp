@@ -2,8 +2,8 @@
 #include <iostream>
 
 Customer::Customer() : name("") {}
-Customer::Customer(string id, string name) 
-	: customerId(id), name(name) {}
+Customer::Customer(string pin, string name) 
+	: pin(pin), name(name) {}
 
 void Customer::openAccount(string accountNumber, double initialBalance) {
 	Account newAccount(accountNumber, initialBalance); // create new Account object
@@ -20,8 +20,8 @@ Account* Customer::getAccount(string accountNumber) {
 	return nullptr;
 }
 
-string Customer::getCustomerId() const {
-	return customerId;
+string Customer::getPin() const {
+	return pin;
 }
 
 string Customer::getName() const {
