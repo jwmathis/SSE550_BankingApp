@@ -38,9 +38,9 @@ const string WELCOME_MESSAGE = "Welcome to Mercer Money Banking!";
 const string INVALID_OPTION = "Invalid option. Please try again.";
 
 // Functions prototypes for modularization
-void registerCustomer(Bank& bank, const char* s);
-void loginCustomer(Bank& bank, const char* s);
-void customerMenu(Customer* customer, Bank& bank, const char* s);
+void registerCustomer(Bank& bank);
+void loginCustomer(Bank& bank);
+void customerMenu(Customer* customer, Bank& bank);
 
 // SQLite Database management functions
 static int createDB(const char* s);
@@ -48,6 +48,7 @@ static int createTable(const char* s);
 static int insertUser(const char* s, const string& name, const string& username, const string& pin);
 static int addAccount(const char* s, const string& username, const string& accountNumber, double balance);
 static int showAllData(const char* s);
+static int showAllTables(const char* s);
 static int selectUserData(const char* s, const string& username);
 static int selectAccounts(const char* s, const string& username);
 static int callback(void* NotUsed, int argc, char** argv, char** azColName);
@@ -55,13 +56,10 @@ static int callback(void* NotUsed, int argc, char** argv, char** azColName);
 
 int main() {
 	// Open/Create the database
-	const char* databaseDir = "mercerBank.db"; 
-	sqlite3* DB;
-
-	createDB(databaseDir); // Will create database file in the current directory of project
+	const char* databaseDir = "MB.db"; 
+	createDB(databaseDir);
 	createTable(databaseDir);
-	selectData(databaseDir);
-	Bank MercerBank; //initialize bank
+	Bank MercerBank(databaseDir); //initialize bank and database
 
 	cout << WELCOME_MESSAGE << endl; // Display welcome message
 
@@ -78,17 +76,19 @@ int main() {
 
 		switch (choice) {
 		case REGISTER:
-			registerCustomer(MercerBank, databaseDir);
+			registerCustomer(MercerBank);
 			break;
 
 		case LOGIN:
-			loginCustomer(MercerBank, databaseDir);
+			loginCustomer(MercerBank);
 			break;
 
 		case EXIT:
 			cout << "Thanks for banking with us!" << endl;
 			return 0;
-
+		case 4:
+			showAllTables(databaseDir);
+			break;
 		default:
 			cout << INVALID_OPTION << endl;
 
@@ -100,7 +100,7 @@ int main() {
 
 // Bank function declarations
 
-void registerCustomer(Bank& bank, const char* s) {
+void registerCustomer(Bank& bank) {
 	string name, username, pin;
 	
 	cout << "Enter your full legal name: ";
@@ -116,12 +116,12 @@ void registerCustomer(Bank& bank, const char* s) {
 		cout << "Error: PIN must be exactly 4 digits." << endl;
 		return;
 	}
-
-	int userExists = insertUser(s, name, username, pin);
-	if (!userExists) { bank.registerCustomer(name, username, pin); }
+	if (bank.registerCustomer(name, username, pin)) {
+		cout << "You've been registered! Thanks for signing up!" << endl;
+	}
 }
 
-void loginCustomer(Bank& bank, const char* s) {
+void loginCustomer(Bank& bank) {
 	string username, pin;
 
 	cout << "Enter your username: ";
@@ -137,10 +137,10 @@ void loginCustomer(Bank& bank, const char* s) {
 	}
 
 	cout << "Welcome, " << customer->getName() << "!" << endl;
-	customerMenu(customer, bank, s);
+	customerMenu(customer, bank);
 }
 
-void customerMenu(Customer* customer, Bank& bank, const char* s) {
+void customerMenu(Customer* customer, Bank& bank) {
 	while (true) {
 		cout << "\nCustomer Menu:\n";
 		cout << "1. Open Account\n";
@@ -161,15 +161,16 @@ void customerMenu(Customer* customer, Bank& bank, const char* s) {
 			cin >> initialBalance;
 
 			int accountNumber = bank.generateAccountNumber();
-			addAccount(s, customer->getUsername(), to_string(accountNumber), initialBalance);
-			selectAccounts(s, customer->getUsername());
-			customer->openAccount(accountNumber, initialBalance);
+			if (bank.addAccountForCustomer(customer->getId(), to_string(accountNumber), initialBalance)) {
+				cout << "Account created!" << endl;
+			}
 			break;
 		}
 
 		case BALANCE_INQUIRY: {
 			cout << "Accounts:\n";
-			for (const auto& account : customer->getAccounts()) {
+			auto accounts = bank.getAccountsForCustomer(customer->getId());
+			for (const auto& account : accounts) {
 				cout << "Account Number: " << account.getAccountNum() << ", Balance: " << account.getBalance() << endl;
 			}
 			break;
@@ -181,11 +182,14 @@ void customerMenu(Customer* customer, Bank& bank, const char* s) {
 			double amount;
 			cout << "Enter account number: ";
 			cin >> accountNumber;
-			Account* account = customer->getAccount(accountNumber);
+			Account* account = bank.getAccountByNumber(accountNumber); // Fetch the account from database
 			if (account) {
 				cout << "Enter amount to deposit: ";
 				cin >> amount;
-				account->deposit(amount);
+				account->deposit(amount); // Adjust balance in memory
+				if (bank.updateAccountBalance(account->getId(), account->getBalance())) {
+					cout << "Deposit successful. New balance: " << account->getBalance() << endl;
+				}
 			}
 			else {
 				cout << "Account not found." << endl;
@@ -198,11 +202,14 @@ void customerMenu(Customer* customer, Bank& bank, const char* s) {
 			double amount;
 			cout << "Enter account number: ";
 			cin >> accountNumber;
-			Account* account = customer->getAccount(accountNumber);
+			Account* account = bank.getAccountByNumber(accountNumber);
 			if (account) {
 				cout << "Enter amount to withdraw: ";
 				cin >> amount;
-				account->withdraw(amount);
+				account->withdraw(amount); // Adjust balance in memory
+				if (bank.updateAccountBalance(account->getId(), account->getBalance())) {
+					cout << "Deposit successful. New balance: " << account->getBalance() << endl;
+				}
 			}
 			else {
 				cout << "Account not found." << endl;
@@ -218,8 +225,8 @@ void customerMenu(Customer* customer, Bank& bank, const char* s) {
 			cout << "Enter reciever account number: ";
 			cin >> toAccount;
 
-			Account* sender = customer->getAccount(fromAccount);
-			Account* receiver = customer->getAccount(toAccount);
+			Account* sender = bank.getAccountByNumber(fromAccount);
+			Account* receiver = bank.getAccountByNumber(toAccount);
 
 			if (sender && receiver) {
 				cout << "Enter amount to transfer: ";
@@ -230,7 +237,9 @@ void customerMenu(Customer* customer, Bank& bank, const char* s) {
 					transfer.setAmount(amount);
 					sender->withdraw(amount);
 					receiver->deposit(amount);
-					cout << "Transfer successful!" << endl;
+					if (bank.updateAccountBalance(sender->getId(), sender->getBalance()) && bank.updateAccountBalance(receiver->getId(), receiver->getBalance())) {
+						cout << "Transfer successful!" << endl;
+					}
 				}
 				else {
 					cout << "Insufficient funds in sender's account.";
@@ -245,7 +254,7 @@ void customerMenu(Customer* customer, Bank& bank, const char* s) {
 		case LOGOUT:
 			cout << "You've been logged out." << endl;
 			return;
-
+		
 		default: 
 			cout << INVALID_OPTION << endl;
 		}
@@ -385,6 +394,28 @@ static int showAllData(const char* s) {
 
 	return 0;
 }
+
+static int showAllTables(const char* s) {
+	sqlite3* DB;
+	int exit = sqlite3_open(s, &DB);
+
+	if (exit != SQLITE_OK) {
+		cerr << "Error opening databases: " << sqlite3_errmsg(DB) << endl;
+		return 1;
+	}
+
+	string sqlUsers = "SELECT * FROM users;";
+	cout << "Users Table: " << endl;
+	sqlite3_exec(DB, sqlUsers.c_str(), callback, NULL, NULL);
+
+	string sqlAccounts = "SELECT * FROM accounts;";
+	cout << "\nAccounts Table:" << endl;
+	sqlite3_exec(DB, sqlAccounts.c_str(), callback, NULL, NULL);
+
+	sqlite3_close(DB);
+	return 0;
+}
+
 static int selectUserData(const char* s, const string& username) {
 	sqlite3* DB;
 
@@ -437,7 +468,7 @@ static int callback(void* NotUsed, int argc, char** argv, char** azColName) {
 		// column name and value
 		cout << azColName[i] << ": " << argv[i] << endl;
 	}
-
+	cout << "----------------------------------------" << endl;
 	cout << endl;
 
 	return 0;

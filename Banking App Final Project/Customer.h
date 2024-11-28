@@ -2,26 +2,25 @@
 #include <string>
 #include <vector>
 #include "Account.h"
+#include "sqlite3.h"
 
 using namespace std;
 
 class Customer {
 private:
-	string name; // Customer name for accounts
-	string username; // Username for login
-	string pin; //replaced customerID with a PIN for authentication
-	vector<Account> accounts;
+	int id;				// Unique ID in the database
+	string name;		// Customer' name for accounts's full name on the account
+	string username;	// Unique username for login
+	string pin;			// PIN for validation
 
 public:
-	Customer();
-	Customer(string name, string username, string pin);
+	Customer(int id, const string& name, const string& username, const string& pin);
 
-	void openAccount(int accountNumber, double initialBalance);
-	Account* getAccount(string accountNumber);
+	// Getters
+	int getId() const;
+	const string& getName() const;
+	const string& getUsername() const;
 
-	string getName() const;
-	string getUsername() const;
-	string getPin() const;
-
-	const vector<Account>& getAccounts() const { return accounts; }
+	// Behavior methods
+	bool verifyPin(const string& inputPin) const; // Method to validate PIN
 };

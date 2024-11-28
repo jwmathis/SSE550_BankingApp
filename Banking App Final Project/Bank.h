@@ -1,19 +1,30 @@
 #pragma once
 #include <string>
-#include <unordered_map>
+#include <iostream>
+#include "sqlite3.h"
 #include "Customer.h"
 using namespace std;
 
 class Bank
 {
 private:
-	unordered_map<string, Customer> customers;
-	int accountNumberCounter = 100000; // Start account numbers
+	sqlite3* db;
+
+	bool executeSQL(const string& query, sqlite3_stmt** stmt = nullptr);
+	int getUserId(const string& username);
+	int accountNumberCounter = 100000;
 
 public:
-	void registerCustomer(const string& name, const string& username, const string& pin);
+	Bank(const string& dbName); // Constructor to open database
+	~Bank(); // Destructor to close database
+
+	bool registerCustomer(const string& name, const string& username, const string& pin);
 	Customer* login(const string& username, const string& pin);
 
-	int generateAccountNumber(); // Method to generate account numbers for customers
+	bool addAccountForCustomer(int userId, const string& accountNumber, double initialBalance);
+	vector<Account> getAccountsForCustomer(int userId);
+	Account* getAccountByNumber(const string& accountNumber);
+	bool updateAccountBalance(int accountId, double newBalance);
+	int generateAccountNumber();
 };
 

@@ -5,17 +5,20 @@ using namespace std;
 
 class Account {
 private:
-	string accountNum;
-	double balance;
+	int id;				// Unique ID in the database
+	string accountNum;	// Unique account number
+	double balance;		// Current account balance
 
 public:
-	Account(string accNum, double initialBalance);
+	Account(int id, const string& accNum, double initialBalance);
 	Account();
-	// Declare Functions
+	// Getters
+	int getId() const;
+	const string& getAccountNum() const;
+	double getBalance() const;
+
+	// Behavior methods that are Database independent
 	void withdraw(double Amount);
 	void deposit(double Amount);
-	string getAccountNum() const;
-	double getBalance() const;
-	void setBalance(double newBalance);
 };
 
