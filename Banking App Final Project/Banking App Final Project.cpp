@@ -38,80 +38,29 @@ const string WELCOME_MESSAGE = "Welcome to Mercer Money Banking!";
 const string INVALID_OPTION = "Invalid option. Please try again.";
 
 // Functions prototypes for modularization
-void registerCustomer(Bank& bank, sqlite3* db);
-void loginCustomer(Bank& bank);
-void customerMenu(Customer* customer, Bank& bank);
+void registerCustomer(Bank& bank, const char* s);
+void loginCustomer(Bank& bank, const char* s);
+void customerMenu(Customer* customer, Bank& bank, const char* s);
 
 // SQLite Database management functions
-static int callback(void* NotUsed, int argc, char** argv, char** azColName) {
-	int i;
-	for (i = 0; i < argc; i++) {
-		printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
-	}
-	printf("\n");
-	return 0;
-}
+static int createDB(const char* s);
+static int createTable(const char* s);
+static int insertUser(const char* s, const string& name, const string& username, const string& pin);
+static int addAccount(const char* s, const string& username, const string& accountNumber, double balance);
+static int showAllData(const char* s);
+static int selectUserData(const char* s, const string& username);
+static int selectAccounts(const char* s, const string& username);
+static int callback(void* NotUsed, int argc, char** argv, char** azColName);
 
-void createTable(sqlite3* db) {
-	const char* createTableSQL = "CREATE TABLE IF NOT EXISTS USERS ( "
-		"ID INTEGER PRIMARY KEY AUTOINCREMENT, "
-		"USERNAME TEXT NOT NULL UNIQUE, "
-		"PIN TEXT NOT NULL, "
-		"NAME TEXT NOT NULL);";
-
-	char* errMsg = 0;
-	int rc = sqlite3_exec(db, createTableSQL, callback, 0, &errMsg);
-	if (rc != SQLITE_OK) {
-		cerr << "SQL error: " << errMsg << endl;
-		sqlite3_free(errMsg);
-	}
-	else {
-		cout << "Table created successfully" << endl;
-	}
-}
-
-int insertUser(sqlite3* db, const string& username, const string& password, const string& name) {
-	string insertSQL = "INSERT INTO USERS (USERNAME, PIN, NAME) VALUES ( '" + username + "', '" + password + "', '" + name + "'); ";
-	char* errMsg = 0;
-	int rc = sqlite3_exec(db, insertSQL.c_str(), callback, 0, &errMsg);
-	if (rc != SQLITE_OK) {
-		if (string(errMsg).find("UNIQUE constraint failed") != string::npos) {
-			cout << "Error: Username already exists." << endl;
-			return 0;
-		}
-		else {
-			cerr << "SQL error: " << errMsg << endl;
-			return 0;
-		}
-		sqlite3_free(errMsg);
-	}
-	else {
-		cout << "User " << username << " registered successfully." << endl;
-		return 1;
-	}
-}
-
-sqlite3* openDatabase(const string& dbName) {
-	sqlite3* db;
-	int rc = sqlite3_open(dbName.c_str(), &db);
-	if (rc) {
-		cerr << "Can't open database: " << sqlite3_errmsg(db) << endl;
-		return nullptr;
-	}
-	else {
-		cout << "Opened database successfully." << endl;
-		return db;
-	}
-}
 
 int main() {
 	// Open/Create the database
-	sqlite3* db = openDatabase("bank.db");
-	if (!db) return -1;
+	const char* databaseDir = "mercerBank.db"; 
+	sqlite3* DB;
 
-	// Create users table if not exists
-	createTable(db);
-
+	createDB(databaseDir); // Will create database file in the current directory of project
+	createTable(databaseDir);
+	selectData(databaseDir);
 	Bank MercerBank; //initialize bank
 
 	cout << WELCOME_MESSAGE << endl; // Display welcome message
@@ -129,11 +78,11 @@ int main() {
 
 		switch (choice) {
 		case REGISTER:
-			registerCustomer(MercerBank, db);
+			registerCustomer(MercerBank, databaseDir);
 			break;
 
 		case LOGIN:
-			loginCustomer(MercerBank);
+			loginCustomer(MercerBank, databaseDir);
 			break;
 
 		case EXIT:
@@ -149,9 +98,9 @@ int main() {
 	return 0;
 }
 
-// Function declarations
+// Bank function declarations
 
-void registerCustomer(Bank& bank, sqlite3* db) {
+void registerCustomer(Bank& bank, const char* s) {
 	string name, username, pin;
 	
 	cout << "Enter your full legal name: ";
@@ -168,12 +117,11 @@ void registerCustomer(Bank& bank, sqlite3* db) {
 		return;
 	}
 
-	int userDoesNotExist = insertUser(db, username, pin, name); // Add user to the database
-	if (userDoesNotExist) { bank.registerCustomer(name, username, pin); }
-	sqlite3_close(db); // Close the database
+	int userExists = insertUser(s, name, username, pin);
+	if (!userExists) { bank.registerCustomer(name, username, pin); }
 }
 
-void loginCustomer(Bank& bank) {
+void loginCustomer(Bank& bank, const char* s) {
 	string username, pin;
 
 	cout << "Enter your username: ";
@@ -189,10 +137,10 @@ void loginCustomer(Bank& bank) {
 	}
 
 	cout << "Welcome, " << customer->getName() << "!" << endl;
-	customerMenu(customer, bank);
+	customerMenu(customer, bank, s);
 }
 
-void customerMenu(Customer* customer, Bank& bank) {
+void customerMenu(Customer* customer, Bank& bank, const char* s) {
 	while (true) {
 		cout << "\nCustomer Menu:\n";
 		cout << "1. Open Account\n";
@@ -213,6 +161,8 @@ void customerMenu(Customer* customer, Bank& bank) {
 			cin >> initialBalance;
 
 			int accountNumber = bank.generateAccountNumber();
+			addAccount(s, customer->getUsername(), to_string(accountNumber), initialBalance);
+			selectAccounts(s, customer->getUsername());
 			customer->openAccount(accountNumber, initialBalance);
 			break;
 		}
@@ -302,6 +252,195 @@ void customerMenu(Customer* customer, Bank& bank) {
 	}
 }
 
+// SQLite Database management functions
+static int createDB(const char* s) {
+	sqlite3* DB;
+	int exit = 0;
+	exit = sqlite3_open(s, &DB);
+	sqlite3_close(DB);
+	return 0;
+}
 
+static int createTable(const char* s) {
+	sqlite3* DB;
+	string sqlUsersTable = "CREATE TABLE IF NOT EXISTS users ( "
+		"id INTEGER PRIMARY KEY AUTOINCREMENT, "
+		"name TEXT NOT NULL, "
+		"username TEXT NOT NULL UNIQUE, "
+		"pin TEXT NOT NULL);";
+
+	string sqlAccountsTable = "CREATE TABLE IF NOT EXISTS accounts ( "
+		"account_id INTEGER PRIMARY KEY AUTOINCREMENT, "
+		"user_id INTEGER NOT NULL, "
+		"account_number TEXT NOT NULL, "
+		"balance DOUBLE NOT NULL DEFAULT 0.0, "
+		"FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE);";
+	try
+	{
+		int exit = 0;
+		exit = sqlite3_open(s, &DB);
+		char* messageError;
+		exit = sqlite3_exec(DB, sqlUsersTable.c_str(), NULL, 0, &messageError);
+
+		if (exit != SQLITE_OK) {
+			cerr << "Error creating users table" << endl;
+			sqlite3_free(messageError);
+		} 
+		else {
+			cout << "Users table created successfully" << endl;
+		}
+
+		exit = sqlite3_exec(DB, sqlAccountsTable.c_str(), NULL, 0, &messageError);
+
+		if (exit != SQLITE_OK) {
+			cerr << "Error creating accounts table" << endl;
+			sqlite3_free(messageError);
+		}
+		else {
+			cout << "Accounts table created successfully" << endl;
+		}
+
+		sqlite3_close(DB);
+	}
+	catch (const exception& e)
+	{
+		cerr << e.what();
+	}
+
+	return 0;
+}
+
+static int insertUser(const char* s, const string& name, const string& username, const string& pin) {
+	sqlite3* DB;
+	char* messageError;
+	int num = -99;
+	int exit = sqlite3_open(s, &DB);
+
+	string sql("INSERT INTO users (name, username, pin) VALUES ( '" + name + "', '" + username + "', '" + pin + "');");
+
+	exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messageError);
+	if (exit != SQLITE_OK) {
+		cerr << "Error inserting" << endl;
+		sqlite3_free(messageError);
+		num = 1;
+	}
+	else {
+		cout << "User added to database successfully" << endl;
+		num = 0;
+	}
+
+	return num;
+}
+
+static int addAccount(const char* s, const string& username, const string& accountNumber, double balance) {
+	sqlite3* DB;
+	char* messageError;
+
+	int exit = sqlite3_open(s, &DB);
+
+	string userIdSQL = "SELECT id FROM users WHERE username = '" + username + "';";
+	sqlite3_stmt* stmt;
+	exit = sqlite3_prepare_v2(DB, userIdSQL.c_str(), -1, &stmt, 0);
+
+	if (exit != SQLITE_OK) {
+		cerr << "SQL error (prepare): " << sqlite3_errmsg(DB) << endl;
+		return 1;
+	}
+
+	int userId = -1;
+	if (sqlite3_step(stmt) == SQLITE_ROW) {
+		userId = sqlite3_column_int(stmt, 0);
+	}
+	else {
+		cerr << "Error: User not found" << endl;
+		sqlite3_finalize(stmt);
+		return 1;
+	}
+	sqlite3_finalize(stmt);
+
+	string insertSQL = "INSERT INTO accounts (user_id, account_number, balance) VALUES (" +
+		to_string(userId) + ", '" + accountNumber + "', " + to_string(balance) + ");";
+	exit = sqlite3_exec(DB, insertSQL.c_str(), NULL, 0, &messageError);
+
+	if (exit != SQLITE_OK) {
+		cerr << "Error inserting account" << endl;
+		sqlite3_free(messageError);
+		return 1;
+	}
+
+	cout << "Account added successfully" << endl;
+	sqlite3_close(DB);
+	return 0;
+}
+
+static int showAllData(const char* s) {
+	sqlite3* DB;
+
+	int exit = sqlite3_open(s, &DB);
+
+	string sql = "SELECT * FROM users";
+
+	/* An open database, SQL to be evaluated, Callback function, 1st argument to callback, Error msg written here*/
+	sqlite3_exec(DB, sql.c_str(), callback, NULL, NULL);
+
+	return 0;
+}
+static int selectUserData(const char* s, const string& username) {
+	sqlite3* DB;
+
+	int exit = sqlite3_open(s, &DB);
+
+	string sql = "SELECT * FROM users WHERE username = '" + username + "';";
+
+	/* An open database, SQL to be evaluated, Callback function, 1st argument to callback, Error msg written here*/
+	sqlite3_exec(DB, sql.c_str(), callback, NULL, NULL);
+
+	return 0;
+}
+
+static int selectAccounts(const char* s, const string& username) {
+	sqlite3* DB;
+	int exit = sqlite3_open(s, &DB);
+
+	// Fetch user ID for the given username
+	string userIdSQL = "SELECT id FROM users WHERE username = '" + username + "';";
+	sqlite3_stmt* stmt;
+	exit = sqlite3_prepare_v2(DB, userIdSQL.c_str(), -1, &stmt, 0);
+
+	if (exit != SQLITE_OK) {
+		cerr << "SQL error (prepare): " << sqlite3_errmsg(DB) << endl;
+		return 1;
+	}
+
+	int userId = -1;
+	if (sqlite3_step(stmt) == SQLITE_ROW) {
+		userId = sqlite3_column_int(stmt, 0);
+	}
+	else {
+		cerr << "Error: User not found" << endl;
+		sqlite3_finalize(stmt);
+		return 1;
+	}
+	sqlite3_finalize(stmt);
+
+	// Query accounts for the user
+	string sql = "SELECT * FROM accounts WHERE user_id = " + to_string(userId) + ";";
+	sqlite3_exec(DB, sql.c_str(), callback, NULL, NULL);
+	sqlite3_close(DB);
+
+	return 0;
+}
+
+
+static int callback(void* NotUsed, int argc, char** argv, char** azColName) {
+	for (int i = 0; i < argc; i++) {
+		// column name and value
+		cout << azColName[i] << ": " << argv[i] << endl;
+	}
+
+	cout << endl;
+
+	return 0;
+}
 
 
