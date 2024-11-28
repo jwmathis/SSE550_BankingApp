@@ -18,3 +18,7 @@ Customer* Bank::login(const string& username, const string& pin) {
 	}
 	return nullptr; // Login failed
 }
+
+int Bank::generateAccountNumber() {
+	return accountNumberCounter++; // Increment account number
+}

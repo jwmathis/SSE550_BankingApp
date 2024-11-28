@@ -16,7 +16,7 @@ public:
 	Customer();
 	Customer(string name, string username, string pin);
 
-	void openAccount(string accountNumber, double initialBalance);
+	void openAccount(int accountNumber, double initialBalance);
 	Account* getAccount(string accountNumber);
 
 	string getName() const;

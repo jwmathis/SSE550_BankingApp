@@ -39,7 +39,7 @@ const string INVALID_OPTION = "Invalid option. Please try again.";
 // Functions for modularization
 void registerCustomer(Bank& bank);
 void loginCustomer(Bank& bank);
-void customerMenu(Customer* customer);
+void customerMenu(Customer* customer, Bank& bank);
 
 int main() {
 
@@ -270,10 +270,10 @@ void loginCustomer(Bank& bank) {
 	}
 
 	cout << "Welcome, " << customer->getName() << "!" << endl;
-	customerMenu(customer);
+	customerMenu(customer, bank);
 }
 
-void customerMenu(Customer* customer) {
+void customerMenu(Customer* customer, Bank& bank) {
 	while (true) {
 		cout << "\nCustomer Menu:\n";
 		cout << "1. Open Account\n";
@@ -289,12 +289,11 @@ void customerMenu(Customer* customer) {
 
 		switch (choice) {
 		case NEW_ACCOUNT: {
-			string accountNumber;
 			double initialBalance;
-			cout << "Enter new account number: ";
-			cin >> accountNumber;
 			cout << "Enter initial balance: ";
 			cin >> initialBalance;
+
+			int accountNumber = bank.generateAccountNumber();
 			customer->openAccount(accountNumber, initialBalance);
 			break;
 		}
