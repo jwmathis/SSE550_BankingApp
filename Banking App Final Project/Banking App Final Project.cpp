@@ -8,8 +8,14 @@
 #include "Customer.h"
 #include "Account.h"
 #include "Transfer.h"
+#include "sqlite3.h" // For database management
 
 using namespace std;
+
+/*TODO:
+Current Issues: SQL throws exception when there is a duplicate username
+1. Update classes to look for database file to read user login information
+2. Potentially add table rows to store account information for each user*/
 
 // Enums for menu options
 enum MainMenuOption {
@@ -32,11 +38,79 @@ const string WELCOME_MESSAGE = "Welcome to Mercer Money Banking!";
 const string INVALID_OPTION = "Invalid option. Please try again.";
 
 // Functions prototypes for modularization
-void registerCustomer(Bank& bank);
+void registerCustomer(Bank& bank, sqlite3* db);
 void loginCustomer(Bank& bank);
 void customerMenu(Customer* customer, Bank& bank);
 
+// SQLite Database management functions
+static int callback(void* NotUsed, int argc, char** argv, char** azColName) {
+	int i;
+	for (i = 0; i < argc; i++) {
+		printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
+	}
+	printf("\n");
+	return 0;
+}
+
+void createTable(sqlite3* db) {
+	const char* createTableSQL = "CREATE TABLE IF NOT EXISTS USERS ( "
+		"ID INTEGER PRIMARY KEY AUTOINCREMENT, "
+		"USERNAME TEXT NOT NULL UNIQUE, "
+		"PIN TEXT NOT NULL, "
+		"NAME TEXT NOT NULL);";
+
+	char* errMsg = 0;
+	int rc = sqlite3_exec(db, createTableSQL, callback, 0, &errMsg);
+	if (rc != SQLITE_OK) {
+		cerr << "SQL error: " << errMsg << endl;
+		sqlite3_free(errMsg);
+	}
+	else {
+		cout << "Table created successfully" << endl;
+	}
+}
+
+int insertUser(sqlite3* db, const string& username, const string& password, const string& name) {
+	string insertSQL = "INSERT INTO USERS (USERNAME, PIN, NAME) VALUES ( '" + username + "', '" + password + "', '" + name + "'); ";
+	char* errMsg = 0;
+	int rc = sqlite3_exec(db, insertSQL.c_str(), callback, 0, &errMsg);
+	if (rc != SQLITE_OK) {
+		if (string(errMsg).find("UNIQUE constraint failed") != string::npos) {
+			cout << "Error: Username already exists." << endl;
+			return 0;
+		}
+		else {
+			cerr << "SQL error: " << errMsg << endl;
+			return 0;
+		}
+		sqlite3_free(errMsg);
+	}
+	else {
+		cout << "User " << username << " registered successfully." << endl;
+		return 1;
+	}
+}
+
+sqlite3* openDatabase(const string& dbName) {
+	sqlite3* db;
+	int rc = sqlite3_open(dbName.c_str(), &db);
+	if (rc) {
+		cerr << "Can't open database: " << sqlite3_errmsg(db) << endl;
+		return nullptr;
+	}
+	else {
+		cout << "Opened database successfully." << endl;
+		return db;
+	}
+}
+
 int main() {
+	// Open/Create the database
+	sqlite3* db = openDatabase("bank.db");
+	if (!db) return -1;
+
+	// Create users table if not exists
+	createTable(db);
 
 	Bank MercerBank; //initialize bank
 
@@ -55,7 +129,7 @@ int main() {
 
 		switch (choice) {
 		case REGISTER:
-			registerCustomer(MercerBank);
+			registerCustomer(MercerBank, db);
 			break;
 
 		case LOGIN:
@@ -77,7 +151,7 @@ int main() {
 
 // Function declarations
 
-void registerCustomer(Bank& bank) {
+void registerCustomer(Bank& bank, sqlite3* db) {
 	string name, username, pin;
 	
 	cout << "Enter your full legal name: ";
@@ -94,7 +168,9 @@ void registerCustomer(Bank& bank) {
 		return;
 	}
 
-	bank.registerCustomer(name, username, pin);
+	int userDoesNotExist = insertUser(db, username, pin, name); // Add user to the database
+	if (userDoesNotExist) { bank.registerCustomer(name, username, pin); }
+	sqlite3_close(db); // Close the database
 }
 
 void loginCustomer(Bank& bank) {
@@ -225,3 +301,7 @@ void customerMenu(Customer* customer, Bank& bank) {
 		}
 	}
 }
+
+
+
+

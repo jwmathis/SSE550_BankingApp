@@ -131,12 +131,14 @@
     <ClCompile Include="Bank.cpp" />
     <ClCompile Include="Banking App Final Project.cpp" />
     <ClCompile Include="Customer.cpp" />
+    <ClCompile Include="sqlite3.c" />
     <ClCompile Include="Transfer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Account.h" />
     <ClInclude Include="Bank.h" />
     <ClInclude Include="Customer.h" />
+    <ClInclude Include="sqlite3.h" />
     <ClInclude Include="Transfer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
