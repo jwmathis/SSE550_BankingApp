@@ -45,13 +45,13 @@ void customerMenu(Customer* customer, Bank& bank);
 // SQLite Database management functions
 static int createDB(const char* s);
 static int createTable(const char* s);
-static int insertUser(const char* s, const string& name, const string& username, const string& pin);
-static int addAccount(const char* s, const string& username, const string& accountNumber, double balance);
 static int showAllData(const char* s);
 static int showAllTables(const char* s);
-static int selectUserData(const char* s, const string& username);
-static int selectAccounts(const char* s, const string& username);
 static int callback(void* NotUsed, int argc, char** argv, char** azColName);
+//static int insertUser(const char* s, const string& name, const string& username, const string& pin);
+//static int addAccount(const char* s, const string& username, const string& accountNumber, double balance);
+//static int selectUserData(const char* s, const string& username);
+//static int selectAccounts(const char* s, const string& username);
 
 
 int main() {
@@ -86,9 +86,11 @@ int main() {
 		case EXIT:
 			cout << "Thanks for banking with us!" << endl;
 			return 0;
-		case 4:
+
+		case 9: // secret menu to view databases
 			showAllTables(databaseDir);
 			break;
+
 		default:
 			cout << INVALID_OPTION << endl;
 
@@ -99,7 +101,6 @@ int main() {
 }
 
 // Bank function declarations
-
 void registerCustomer(Bank& bank) {
 	string name, username, pin;
 	
@@ -162,7 +163,7 @@ void customerMenu(Customer* customer, Bank& bank) {
 
 			int accountNumber = bank.generateAccountNumber();
 			if (bank.addAccountForCustomer(customer->getId(), to_string(accountNumber), initialBalance)) {
-				cout << "Account created!" << endl;
+				cout << "Your Account has been created! Your account number is: " +  to_string(accountNumber) << endl;
 			}
 			break;
 		}
@@ -202,7 +203,7 @@ void customerMenu(Customer* customer, Bank& bank) {
 			double amount;
 			cout << "Enter account number: ";
 			cin >> accountNumber;
-			Account* account = bank.getAccountByNumber(accountNumber);
+			Account* account = bank.getAccountByNumber(accountNumber); // Fetch the account from the database
 			if (account) {
 				cout << "Enter amount to withdraw: ";
 				cin >> amount;
@@ -319,69 +320,6 @@ static int createTable(const char* s) {
 	return 0;
 }
 
-static int insertUser(const char* s, const string& name, const string& username, const string& pin) {
-	sqlite3* DB;
-	char* messageError;
-	int num = -99;
-	int exit = sqlite3_open(s, &DB);
-
-	string sql("INSERT INTO users (name, username, pin) VALUES ( '" + name + "', '" + username + "', '" + pin + "');");
-
-	exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messageError);
-	if (exit != SQLITE_OK) {
-		cerr << "Error inserting" << endl;
-		sqlite3_free(messageError);
-		num = 1;
-	}
-	else {
-		cout << "User added to database successfully" << endl;
-		num = 0;
-	}
-
-	return num;
-}
-
-static int addAccount(const char* s, const string& username, const string& accountNumber, double balance) {
-	sqlite3* DB;
-	char* messageError;
-
-	int exit = sqlite3_open(s, &DB);
-
-	string userIdSQL = "SELECT id FROM users WHERE username = '" + username + "';";
-	sqlite3_stmt* stmt;
-	exit = sqlite3_prepare_v2(DB, userIdSQL.c_str(), -1, &stmt, 0);
-
-	if (exit != SQLITE_OK) {
-		cerr << "SQL error (prepare): " << sqlite3_errmsg(DB) << endl;
-		return 1;
-	}
-
-	int userId = -1;
-	if (sqlite3_step(stmt) == SQLITE_ROW) {
-		userId = sqlite3_column_int(stmt, 0);
-	}
-	else {
-		cerr << "Error: User not found" << endl;
-		sqlite3_finalize(stmt);
-		return 1;
-	}
-	sqlite3_finalize(stmt);
-
-	string insertSQL = "INSERT INTO accounts (user_id, account_number, balance) VALUES (" +
-		to_string(userId) + ", '" + accountNumber + "', " + to_string(balance) + ");";
-	exit = sqlite3_exec(DB, insertSQL.c_str(), NULL, 0, &messageError);
-
-	if (exit != SQLITE_OK) {
-		cerr << "Error inserting account" << endl;
-		sqlite3_free(messageError);
-		return 1;
-	}
-
-	cout << "Account added successfully" << endl;
-	sqlite3_close(DB);
-	return 0;
-}
-
 static int showAllData(const char* s) {
 	sqlite3* DB;
 
@@ -416,53 +354,6 @@ static int showAllTables(const char* s) {
 	return 0;
 }
 
-static int selectUserData(const char* s, const string& username) {
-	sqlite3* DB;
-
-	int exit = sqlite3_open(s, &DB);
-
-	string sql = "SELECT * FROM users WHERE username = '" + username + "';";
-
-	/* An open database, SQL to be evaluated, Callback function, 1st argument to callback, Error msg written here*/
-	sqlite3_exec(DB, sql.c_str(), callback, NULL, NULL);
-
-	return 0;
-}
-
-static int selectAccounts(const char* s, const string& username) {
-	sqlite3* DB;
-	int exit = sqlite3_open(s, &DB);
-
-	// Fetch user ID for the given username
-	string userIdSQL = "SELECT id FROM users WHERE username = '" + username + "';";
-	sqlite3_stmt* stmt;
-	exit = sqlite3_prepare_v2(DB, userIdSQL.c_str(), -1, &stmt, 0);
-
-	if (exit != SQLITE_OK) {
-		cerr << "SQL error (prepare): " << sqlite3_errmsg(DB) << endl;
-		return 1;
-	}
-
-	int userId = -1;
-	if (sqlite3_step(stmt) == SQLITE_ROW) {
-		userId = sqlite3_column_int(stmt, 0);
-	}
-	else {
-		cerr << "Error: User not found" << endl;
-		sqlite3_finalize(stmt);
-		return 1;
-	}
-	sqlite3_finalize(stmt);
-
-	// Query accounts for the user
-	string sql = "SELECT * FROM accounts WHERE user_id = " + to_string(userId) + ";";
-	sqlite3_exec(DB, sql.c_str(), callback, NULL, NULL);
-	sqlite3_close(DB);
-
-	return 0;
-}
-
-
 static int callback(void* NotUsed, int argc, char** argv, char** azColName) {
 	for (int i = 0; i < argc; i++) {
 		// column name and value
@@ -473,5 +364,115 @@ static int callback(void* NotUsed, int argc, char** argv, char** azColName) {
 
 	return 0;
 }
+
+//static int insertUser(const char* s, const string& name, const string& username, const string& pin) {
+//	sqlite3* DB;
+//	char* messageError;
+//	int num = -99;
+//	int exit = sqlite3_open(s, &DB);
+//
+//	string sql("INSERT INTO users (name, username, pin) VALUES ( '" + name + "', '" + username + "', '" + pin + "');");
+//
+//	exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messageError);
+//	if (exit != SQLITE_OK) {
+//		cerr << "Error inserting" << endl;
+//		sqlite3_free(messageError);
+//		num = 1;
+//	}
+//	else {
+//		cout << "User added to database successfully" << endl;
+//		num = 0;
+//	}
+//
+//	return num;
+//}
+
+//static int addAccount(const char* s, const string& username, const string& accountNumber, double balance) {
+//	sqlite3* DB;
+//	char* messageError;
+//
+//	int exit = sqlite3_open(s, &DB);
+//
+//	string userIdSQL = "SELECT id FROM users WHERE username = '" + username + "';";
+//	sqlite3_stmt* stmt;
+//	exit = sqlite3_prepare_v2(DB, userIdSQL.c_str(), -1, &stmt, 0);
+//
+//	if (exit != SQLITE_OK) {
+//		cerr << "SQL error (prepare): " << sqlite3_errmsg(DB) << endl;
+//		return 1;
+//	}
+//
+//	int userId = -1;
+//	if (sqlite3_step(stmt) == SQLITE_ROW) {
+//		userId = sqlite3_column_int(stmt, 0);
+//	}
+//	else {
+//		cerr << "Error: User not found" << endl;
+//		sqlite3_finalize(stmt);
+//		return 1;
+//	}
+//	sqlite3_finalize(stmt);
+//
+//	string insertSQL = "INSERT INTO accounts (user_id, account_number, balance) VALUES (" +
+//		to_string(userId) + ", '" + accountNumber + "', " + to_string(balance) + ");";
+//	exit = sqlite3_exec(DB, insertSQL.c_str(), NULL, 0, &messageError);
+//
+//	if (exit != SQLITE_OK) {
+//		cerr << "Error inserting account" << endl;
+//		sqlite3_free(messageError);
+//		return 1;
+//	}
+//
+//	cout << "Account added successfully" << endl;
+//	sqlite3_close(DB);
+//	return 0;
+//}
+
+//static int selectUserData(const char* s, const string& username) {
+//	sqlite3* DB;
+//
+//	int exit = sqlite3_open(s, &DB);
+//
+//	string sql = "SELECT * FROM users WHERE username = '" + username + "';";
+//
+//	/* An open database, SQL to be evaluated, Callback function, 1st argument to callback, Error msg written here*/
+//	sqlite3_exec(DB, sql.c_str(), callback, NULL, NULL);
+//
+//	return 0;
+//}
+//
+//static int selectAccounts(const char* s, const string& username) {
+//	sqlite3* DB;
+//	int exit = sqlite3_open(s, &DB);
+//
+//	// Fetch user ID for the given username
+//	string userIdSQL = "SELECT id FROM users WHERE username = '" + username + "';";
+//	sqlite3_stmt* stmt;
+//	exit = sqlite3_prepare_v2(DB, userIdSQL.c_str(), -1, &stmt, 0);
+//
+//	if (exit != SQLITE_OK) {
+//		cerr << "SQL error (prepare): " << sqlite3_errmsg(DB) << endl;
+//		return 1;
+//	}
+//
+//	int userId = -1;
+//	if (sqlite3_step(stmt) == SQLITE_ROW) {
+//		userId = sqlite3_column_int(stmt, 0);
+//	}
+//	else {
+//		cerr << "Error: User not found" << endl;
+//		sqlite3_finalize(stmt);
+//		return 1;
+//	}
+//	sqlite3_finalize(stmt);
+//
+//	// Query accounts for the user
+//	string sql = "SELECT * FROM accounts WHERE user_id = " + to_string(userId) + ";";
+//	sqlite3_exec(DB, sql.c_str(), callback, NULL, NULL);
+//	sqlite3_close(DB);
+//
+//	return 0;
+//}
+
 
 

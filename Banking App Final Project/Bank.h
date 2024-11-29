@@ -13,7 +13,7 @@ private:
 	bool executeSQL(const string& query, sqlite3_stmt** stmt = nullptr);
 	int getUserId(const string& username);
 	int accountNumberCounter = 100000;
-
+	bool accountNumberExists(const string& accountNumber);
 public:
 	Bank(const string& dbName); // Constructor to open database
 	~Bank(); // Destructor to close database

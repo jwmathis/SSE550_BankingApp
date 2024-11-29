@@ -1,4 +1,6 @@
 #include "Bank.h"
+#include <ctime>
+#include <cstdlib>
 #include <iostream>
 
 Bank::Bank(const string& dbName) {
@@ -133,5 +135,27 @@ bool Bank::updateAccountBalance(int accountId, double newBalance) {
 }
 
 int Bank::generateAccountNumber() {
-	return accountNumberCounter++;
+	int accountNumber;
+	srand(time(0));
+
+	do {
+		accountNumber = (rand() % 900000) + 100000;
+
+	} while (accountNumberExists(to_string(accountNumber)));
+
+	return accountNumber;
+}
+
+bool Bank::accountNumberExists(const string& accountNumber) {
+	string sql = "SELECT COUNT(*) FROM accounts WHERE account_number = '" + accountNumber + "';";
+	sqlite3_stmt* stmt;
+
+	if (!executeSQL(sql, &stmt)) return -1;
+
+	int count = 0;
+	if (sqlite3_step(stmt) == SQLITE_ROW) {
+		count = sqlite3_column_int(stmt, 0);
+	}
+	sqlite3_finalize(stmt);
+	return count > 0;
 }
