@@ -38,7 +38,7 @@ enum CustomerMenuOption {
 };
 
 // Constants
-const string WELCOME_MESSAGE = "Welcome to Mercer Money Banking!";
+const string WELCOME_MESSAGE = "			Welcome to Mercer Money Banking!";
 const string INVALID_OPTION = "Invalid option. Please try again.";
 
 // Functions prototypes for modularization
@@ -57,132 +57,15 @@ static int callback(void* NotUsed, int argc, char** argv, char** azColName);
 //static int selectUserData(const char* s, const string& username);
 //static int selectAccounts(const char* s, const string& username);
 
-void clearScreen() {
-	// This works for Windows; for UNIX, use "clear"
-	system("cls");
-}
+// Functions for animated dollar sign logo
+void clearScreen();
 
-void moveToPosition(int row, int col) {
-	cout << "\033[" << row << ";" << col << "H";
-}
+void moveToPosition(int row, int col);
 
-void printDollarSign(int frame, int row, int col) {
-	moveToPosition(row, col);
-	switch (frame) {
-	case 0: // Initial frame
-		cout << "      $$$$       " << endl;
-		moveToPosition(row + 1, col);
-		cout << "    $$$  $$$     " << endl;
-		moveToPosition(row + 2, col);
-		cout << "   $$      $$    " << endl;
-		moveToPosition(row + 3, col);
-		cout << "   $$            " << endl;
-		moveToPosition(row + 4, col);
-		cout << "    $$$$$$       " << endl;
-		moveToPosition(row + 5, col);
-		cout << "         $$      " << endl;
-		moveToPosition(row + 6, col);
-		cout << "   $$      $$    " << endl;
-		moveToPosition(row + 7, col);
-		cout << "    $$$  $$$     " << endl;
-		moveToPosition(row + 8, col);
-		cout << "      $$$$       " << endl;
-		break;
-	case 1: // Slight rotation
-		cout << "       $$        " << endl;
-		moveToPosition(row + 1, col);
-		cout << "      $$$$       " << endl;
-		moveToPosition(row + 2, col);
-		cout << "    $$$  $$$     " << endl;
-		moveToPosition(row + 3, col);
-		cout << "   $$      $$    " << endl;
-		moveToPosition(row + 4, col);
-		cout << "   $$            " << endl;
-		moveToPosition(row + 5, col);
-		cout << "    $$$$$$       " << endl;
-		moveToPosition(row + 6, col);
-		cout << "         $$      " << endl;
-		moveToPosition(row + 7, col);
-		cout << "   $$      $$    " << endl;
-		moveToPosition(row + 8, col);
-		cout << "    $$$  $$$     " << endl;
-		break;
-	case 2: // More rotation
-		cout << "       $$        " << endl;
-		moveToPosition(row + 1, col);
-		cout << "       $$        " << endl;
-		moveToPosition(row + 2, col);
-		cout << "      $$$$       " << endl;
-		moveToPosition(row + 3, col);
-		cout << "    $$$  $$$     " << endl;
-		moveToPosition(row + 4, col);
-		cout << "   $$      $$    " << endl;
-		moveToPosition(row + 5, col);
-		cout << "   $$            " << endl;
-		moveToPosition(row + 6, col);
-		cout << "    $$$$$$       " << endl;
-		moveToPosition(row + 7, col);
-		cout << "         $$      " << endl;
-		moveToPosition(row + 8, col);
-		cout << "   $$      $$    " << endl;
-		break;
-	case 3: // Further rotation
-		cout << "         $$      " << endl;
-		moveToPosition(row + 1, col);
-		cout << "       $$        " << endl;
-		moveToPosition(row + 2, col);
-		cout << "       $$        " << endl;
-		moveToPosition(row + 3, col);
-		cout << "      $$$$       " << endl;
-		moveToPosition(row + 4, col);
-		cout << "    $$$  $$$     " << endl;
-		moveToPosition(row + 5, col);
-		cout << "   $$      $$    " << endl;
-		moveToPosition(row + 6, col);
-		cout << "   $$            " << endl;
-		moveToPosition(row + 7, col);
-		cout << "    $$$$$$       " << endl;
-		moveToPosition(row + 8, col);
-		cout << "         $$      " << endl;
-		break;
-	case 4: // Almost back to original
-		cout << "   $$      $$    " << endl;
-		moveToPosition(row + 1, col);
-		cout << "         $$      " << endl;
-		moveToPosition(row + 2, col);
-		cout << "       $$        " << endl;
-		moveToPosition(row + 3, col);
-		cout << "       $$        " << endl;
-		moveToPosition(row + 4, col);
-		cout << "      $$$$       " << endl;
-		moveToPosition(row + 5, col);
-		cout << "    $$$  $$$     " << endl;
-		moveToPosition(row + 6, col);
-		cout << "   $$      $$    " << endl;
-		moveToPosition(row + 7, col);
-		cout << "   $$            " << endl;
-		break;
-	case 5: // Back to original position but flipped
-		cout << "      $$$$       " << endl;
-		moveToPosition(row + 1, col);
-		cout << "    $$$  $$$     " << endl;
-		moveToPosition(row + 2, col);
-		cout << "   $$      $$    " << endl;
-		moveToPosition(row + 3, col);
-		cout << "         $$      " << endl;
-		moveToPosition(row + 4, col);
-		cout << "    $$$$$$       " << endl;
-		moveToPosition(row + 5, col);
-		cout << "   $$            " << endl;
-		moveToPosition(row + 6, col);
-		cout << "   $$      $$    " << endl;
-		moveToPosition(row + 7, col);
-		cout << "    $$$  $$$     " << endl;
-		moveToPosition(row + 8, col);
-		cout << "      $$$$       " << endl;
-		break;
-	}
-}
+void printDollarSign(int frame, int row, int col);
+
+// Function for MU logo
+void printMU();
 
 int main() {
 	// Open/Create the database
@@ -192,8 +75,9 @@ int main() {
 	Bank MercerBank(databaseDir); //initialize bank and database
 	bool exitFlag = false;
 
+	cout << "Press enter to continue...\n";
+
 	const int frames = 6; // Total number of frames for the spin
-	cout << WELCOME_MESSAGE << "\n" << endl; // Display welcome message
 	while (!exitFlag) {
 		for (int i = 0; i < frames; ++i) {
 			//clearScreen(); // Clear the console
@@ -209,9 +93,10 @@ int main() {
 			}
 		}
 	}
-
 	// Display Main menu options
 	while (true) {
+		cout << "\n" << WELCOME_MESSAGE << "\n" << endl; // Display welcome message
+		printMU();
 		cout << "\nMain Menu:\n";
 		cout << "1. Register\n";
 		cout << "2. Login\n";
@@ -634,5 +519,141 @@ static int callback(void* data, int argc, char** argv, char** azColName) {
 //	return 0;
 //}
 
+// Functions for animated dollar sign logo
+void clearScreen() {
+	// This works for Windows; for UNIX, use "clear"
+	system("cls");
+}
 
+void moveToPosition(int row, int col) {
+	cout << "\033[" << row << ";" << col << "H";
+}
+
+void printDollarSign(int frame, int row, int col) {
+	moveToPosition(row, col);
+	switch (frame) {
+	case 0: // Initial frame
+		cout << "      $$$$       " << endl;
+		moveToPosition(row + 1, col);
+		cout << "    $$$  $$$     " << endl;
+		moveToPosition(row + 2, col);
+		cout << "   $$      $$    " << endl;
+		moveToPosition(row + 3, col);
+		cout << "   $$            " << endl;
+		moveToPosition(row + 4, col);
+		cout << "    $$$$$$       " << endl;
+		moveToPosition(row + 5, col);
+		cout << "         $$      " << endl;
+		moveToPosition(row + 6, col);
+		cout << "   $$      $$    " << endl;
+		moveToPosition(row + 7, col);
+		cout << "    $$$  $$$     " << endl;
+		moveToPosition(row + 8, col);
+		cout << "      $$$$       " << endl;
+		break;
+	case 1: // Slight rotation
+		cout << "       $$        " << endl;
+		moveToPosition(row + 1, col);
+		cout << "      $$$$       " << endl;
+		moveToPosition(row + 2, col);
+		cout << "    $$$  $$$     " << endl;
+		moveToPosition(row + 3, col);
+		cout << "   $$      $$    " << endl;
+		moveToPosition(row + 4, col);
+		cout << "   $$            " << endl;
+		moveToPosition(row + 5, col);
+		cout << "    $$$$$$       " << endl;
+		moveToPosition(row + 6, col);
+		cout << "         $$      " << endl;
+		moveToPosition(row + 7, col);
+		cout << "   $$      $$    " << endl;
+		moveToPosition(row + 8, col);
+		cout << "    $$$  $$$     " << endl;
+		break;
+	case 2: // More rotation
+		cout << "       $$        " << endl;
+		moveToPosition(row + 1, col);
+		cout << "       $$        " << endl;
+		moveToPosition(row + 2, col);
+		cout << "      $$$$       " << endl;
+		moveToPosition(row + 3, col);
+		cout << "    $$$  $$$     " << endl;
+		moveToPosition(row + 4, col);
+		cout << "   $$      $$    " << endl;
+		moveToPosition(row + 5, col);
+		cout << "   $$            " << endl;
+		moveToPosition(row + 6, col);
+		cout << "    $$$$$$       " << endl;
+		moveToPosition(row + 7, col);
+		cout << "         $$      " << endl;
+		moveToPosition(row + 8, col);
+		cout << "   $$      $$    " << endl;
+		break;
+	case 3: // Further rotation
+		cout << "         $$      " << endl;
+		moveToPosition(row + 1, col);
+		cout << "       $$        " << endl;
+		moveToPosition(row + 2, col);
+		cout << "       $$        " << endl;
+		moveToPosition(row + 3, col);
+		cout << "      $$$$       " << endl;
+		moveToPosition(row + 4, col);
+		cout << "    $$$  $$$     " << endl;
+		moveToPosition(row + 5, col);
+		cout << "   $$      $$    " << endl;
+		moveToPosition(row + 6, col);
+		cout << "   $$            " << endl;
+		moveToPosition(row + 7, col);
+		cout << "    $$$$$$       " << endl;
+		moveToPosition(row + 8, col);
+		cout << "         $$      " << endl;
+		break;
+	case 4: // Almost back to original
+		cout << "   $$      $$    " << endl;
+		moveToPosition(row + 1, col);
+		cout << "         $$      " << endl;
+		moveToPosition(row + 2, col);
+		cout << "       $$        " << endl;
+		moveToPosition(row + 3, col);
+		cout << "       $$        " << endl;
+		moveToPosition(row + 4, col);
+		cout << "      $$$$       " << endl;
+		moveToPosition(row + 5, col);
+		cout << "    $$$  $$$     " << endl;
+		moveToPosition(row + 6, col);
+		cout << "   $$      $$    " << endl;
+		moveToPosition(row + 7, col);
+		cout << "   $$            " << endl;
+		break;
+	case 5: // Back to original position but flipped
+		cout << "      $$$$       " << endl;
+		moveToPosition(row + 1, col);
+		cout << "    $$$  $$$     " << endl;
+		moveToPosition(row + 2, col);
+		cout << "   $$      $$    " << endl;
+		moveToPosition(row + 3, col);
+		cout << "         $$      " << endl;
+		moveToPosition(row + 4, col);
+		cout << "    $$$$$$       " << endl;
+		moveToPosition(row + 5, col);
+		cout << "   $$            " << endl;
+		moveToPosition(row + 6, col);
+		cout << "   $$      $$    " << endl;
+		moveToPosition(row + 7, col);
+		cout << "    $$$  $$$     " << endl;
+		moveToPosition(row + 8, col);
+		cout << "      $$$$       " << endl;
+		break;
+	}
+}
+
+// Function for MU logo
+void printMU() {
+	// Print the letter M and U side by side
+	cout << "				$     $  $     $" << endl;  // Row 1
+	cout << "				$$   $$  $     $" << endl;  // Row 2
+	cout << "				$ $ $ $  $     $" << endl;  // Row 3
+	cout << "				$  $  $  $     $" << endl;  // Row 4
+	cout << "				$     $  $$$$$$$" << endl;  // Row 5
+}
 
