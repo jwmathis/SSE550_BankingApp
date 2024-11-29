@@ -9,13 +9,14 @@
 #include "Account.h"
 #include "Transfer.h"
 #include "sqlite3.h" // For database management
+#include <iomanip>
 
 using namespace std;
-
+bool printedHeaders = false;
 /*TODO:
-Current Issues: SQL throws exception when there is a duplicate username
-1. Update classes to look for database file to read user login information
-2. Potentially add table rows to store account information for each user*/
+Current Issues:
+1. Database balances don't update when using withdraw, transfer, deposit functions
+2. After using withdraw, transfer, and deposit functions, balances in view accounts does not update*/
 
 // Enums for menu options
 enum MainMenuOption {
@@ -56,7 +57,7 @@ static int callback(void* NotUsed, int argc, char** argv, char** azColName);
 
 int main() {
 	// Open/Create the database
-	const char* databaseDir = "MB.db"; 
+	const char* databaseDir = "MercerBank.db"; 
 	createDB(databaseDir);
 	createTable(databaseDir);
 	Bank MercerBank(databaseDir); //initialize bank and database
@@ -88,6 +89,7 @@ int main() {
 			return 0;
 
 		case 9: // secret menu to view databases
+			//printedHeaders = false;
 			showAllTables(databaseDir);
 			break;
 
@@ -341,27 +343,39 @@ static int showAllTables(const char* s) {
 		cerr << "Error opening databases: " << sqlite3_errmsg(DB) << endl;
 		return 1;
 	}
-
+	printedHeaders = false; // Flag for formatting table data
 	string sqlUsers = "SELECT * FROM users;";
 	cout << "Users Table: " << endl;
-	sqlite3_exec(DB, sqlUsers.c_str(), callback, NULL, NULL);
+	sqlite3_exec(DB, sqlUsers.c_str(), callback, (void*)"Users", NULL);
 
+	printedHeaders = false; // Flag for formatting table data
 	string sqlAccounts = "SELECT * FROM accounts;";
 	cout << "\nAccounts Table:" << endl;
-	sqlite3_exec(DB, sqlAccounts.c_str(), callback, NULL, NULL);
+	sqlite3_exec(DB, sqlAccounts.c_str(), callback, (void*)"Accounts", NULL);
 
 	sqlite3_close(DB);
 	return 0;
 }
 
-static int callback(void* NotUsed, int argc, char** argv, char** azColName) {
-	for (int i = 0; i < argc; i++) {
-		// column name and value
-		cout << azColName[i] << ": " << argv[i] << endl;
-	}
-	cout << "----------------------------------------" << endl;
-	cout << endl;
+static int callback(void* data, int argc, char** argv, char** azColName) {
+	const char* table = (const char*)data;
 
+	if (argv != NULL && !printedHeaders) {
+		if (table != NULL) {
+			cout << "\n" << table << " Data: " << endl;
+			cout << "------------------------------------------------------------------------------------" << endl;
+		}
+		for (int i = 0; i < argc; i++) {
+			cout << left << setw(20) << azColName[i] << "|";
+		}
+		cout << "\n------------------------------------------------------------------------------------" << endl;
+		printedHeaders = true;
+	}
+
+	for (int i = 0; i < argc; i++) {
+		cout << left << setw(20) << (argv[i] ? argv[i] : "NULL") << "|";
+	}
+	cout << endl;
 	return 0;
 }
 
