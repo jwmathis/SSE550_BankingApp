@@ -66,12 +66,15 @@ TEST(SystemTest, TransferFunds) {}
 TEST(SystemTest, CheckBalances) {}
 
 //  Test Case 8
-TEST(SystemTest, InvalidAccountNumber) {}
+TEST(SystemTest, InvalidAccountNumber) {
+	Bank testBank("test.db");
+	
+	// Check if account exists
+	ASSERT_FALSE(testBank.accountNumberExists("0000000"));
 
-//  Test Case 9
-TEST(SystemTest, UniqueAccountNumber) {}
+}
 
-// Test Case 10
+// Test Case 9
 TEST(SystemTest, DatabasePersistance) {
 	Bank testBank("test.db");
 
