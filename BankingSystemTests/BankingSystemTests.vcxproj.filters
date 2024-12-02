@@ -15,39 +15,39 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Account.cpp">
+    <ClCompile Include="..\Banking App Final Project\system_tests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Customer.cpp">
+    <ClCompile Include="..\Banking App Final Project\Account.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Transfer.cpp">
+    <ClCompile Include="..\Banking App Final Project\Bank.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Bank.cpp">
+    <ClCompile Include="..\Banking App Final Project\Customer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="sqlite3.c">
+    <ClCompile Include="..\Banking App Final Project\Transfer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Banking App Final Project.cpp">
+    <ClCompile Include="..\Banking App Final Project\sqlite3.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Account.h">
+    <ClInclude Include="..\Banking App Final Project\Account.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Customer.h">
+    <ClInclude Include="..\Banking App Final Project\Bank.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Transfer.h">
+    <ClInclude Include="..\Banking App Final Project\Customer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Bank.h">
+    <ClInclude Include="..\Banking App Final Project\Transfer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="sqlite3.h">
+    <ClInclude Include="..\Banking App Final Project\sqlite3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
