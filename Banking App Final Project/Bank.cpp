@@ -122,15 +122,24 @@ Account* Bank::getAccountByNumber(const string& accountNumber) {
 }
 
 bool Bank::updateAccountBalance(int accountId, double newBalance) {
-	string sql = "UPDATE accounts SET balance = " + std::to_string(newBalance) +
-		" WHERE account_id = " + std::to_string(accountId) + ";";
-	char* errMessage = nullptr;
+	string sql = "UPDATE accounts SET balance = ? WHERE account_id = ?;";
+	sqlite3_stmt* stmt;
 
-	if (sqlite3_exec(db, sql.c_str(), nullptr, nullptr, &errMessage) != SQLITE_OK) {
-		cerr << "Error updating balance: " << errMessage << endl;
-		sqlite3_free(errMessage);
+	if (sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
+		cerr << "Error preparing statement: " << sqlite3_errmsg(db) << endl;
 		return false;
 	}
+
+	sqlite3_bind_double(stmt, 1, newBalance); // Bind newBalance to the first placeholder
+	sqlite3_bind_int(stmt, 2, accountId); // Bind account_id to the second placeholder
+
+	if (sqlite3_step(stmt) != SQLITE_DONE) {
+		cerr << "Error updating balance: " << sqlite3_errmsg(db) << endl;
+		sqlite3_finalize(stmt);
+		return false;
+	}
+
+	sqlite3_finalize(stmt);
 	return true;
 }
 
