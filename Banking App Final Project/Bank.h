@@ -26,6 +26,7 @@ public:
 	vector<Account> getAccountsForCustomer(int userId);
 	Account* getAccountByNumber(const string& accountNumber);
 	bool updateAccountBalance(int accountId, double newBalance);
+	bool accountRemoveAccount(const string& accountNumber);
 	int generateAccountNumber();
 };
 

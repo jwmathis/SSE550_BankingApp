@@ -6,6 +6,16 @@ using namespace std;
 
 Account::Account(int id, const string& accNum, double initialBalance)
 	: id(id), accountNum(accNum), balance(initialBalance) {}
+/* {
+	id = id;
+	accountNum = accNum;
+	if (initialBalance > 0) {
+		initialBalance = initialBalance;
+	}
+	else {
+		initialBalance = 0;
+	}
+}*/
 
 Account::Account() : id(0), accountNum(""), balance(0.0) {}
 

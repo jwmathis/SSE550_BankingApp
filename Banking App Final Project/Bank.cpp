@@ -205,3 +205,15 @@ bool Bank::accountNumberExists(const string& accountNumber) {
 	sqlite3_finalize(stmt);
 	return count > 0;
 }
+
+bool Bank::accountRemoveAccount(const string& accountNumber) {
+	string sql = "DELETE FROM accounts WHERE account_number = '" + accountNumber + "';";
+	char* errMessage = nullptr;
+
+	if (sqlite3_exec(db, sql.c_str(), nullptr, nullptr, &errMessage) != SQLITE_OK) {
+		cerr << "Error deleting account: " << errMessage << endl;
+		sqlite3_free(errMessage);
+		return false;
+	}
+	return true;
+}

@@ -15,6 +15,14 @@
 #include <conio.h>
 
 using namespace std;
+
+// Global variables
+char option[1];
+bool userInput;
+int choice;
+
+const char* databaseDir = "MercerBank.db";
+
 bool printedHeaders = false;
 /*TODO:
 Current Issues:
@@ -34,6 +42,7 @@ enum CustomerMenuOption {
 	DEPOSIT_AMOUNT,
 	WITHDRAW_AMOUNT,
 	TRANSFER_AMOUNT,
+	CLOSE_ACCOUNT,
 	LOGOUT
 };
 
@@ -43,7 +52,7 @@ const string INVALID_OPTION = "Invalid option. Please try again.";
 
 // Functions prototypes for modularization
 void registerCustomer(Bank& bank);
-void loginCustomer(Bank& bank);
+bool loginCustomer(Bank& bank);
 void customerMenu(Customer* customer, Bank& bank);
 
 // SQLite Database management functions
@@ -68,9 +77,6 @@ void printDollarSign(int frame, int row, int col);
 void printMU();
 
 int main() {
-	// Open/Create the database
-	const char* databaseDir = "MercerBank.db"; 
-
 	Bank MercerBank(databaseDir); //initialize bank and database
 	bool exitFlag = false;
 
@@ -94,6 +100,7 @@ int main() {
 	}
 	// Display Main menu options
 	while (true) {
+
 		cout << "\n" << WELCOME_MESSAGE << "\n" << endl; // Display welcome message
 		printMU();
 		cout << "\nMain Menu:\n";
@@ -102,7 +109,6 @@ int main() {
 		cout << "3. Exit\n";
 		cout << "What would you like to do today? ";
 
-		int choice;
 		cin >> choice;
 
 		switch (choice) {
@@ -110,18 +116,26 @@ int main() {
 			registerCustomer(MercerBank);
 			break;
 
-		case LOGIN:
-			loginCustomer(MercerBank);
+		case LOGIN: {
+			if (!loginCustomer(MercerBank)) {
+				cout << "Would you like to register (Y/N)?" << endl;
+				cin >> option;
+				userInput = strcmp(option, "Y");
+				if (!userInput) {
+					registerCustomer(MercerBank);
+				}
+			}
 			break;
-
-		case EXIT:
+		}
+		case EXIT: {
 			cout << "Thanks for banking with us!" << endl;
 			return 0;
+		}
 
-		case 9: // secret menu to view databases
-			//printedHeaders = false;
+		case 9: {// secret menu to view databases
 			showAllTables(databaseDir);
 			break;
+		}
 
 		default:
 			cout << INVALID_OPTION << endl;
@@ -150,11 +164,13 @@ void registerCustomer(Bank& bank) {
 		return;
 	}
 	if (bank.registerCustomer(name, username, pin)) {
-		cout << "You've been registered! Thanks for signing up!" << endl;
+		Customer* customer = bank.login(username, pin);
+		cout << "You've been registered " << customer->getName() << "! Thanks for signing up!" << endl;
+		customerMenu(customer, bank);
 	}
 }
 
-void loginCustomer(Bank& bank) {
+bool loginCustomer(Bank& bank) {
 	string username, pin;
 
 	cout << "Enter your username: ";
@@ -166,11 +182,11 @@ void loginCustomer(Bank& bank) {
 	Customer* customer = bank.login(username, pin);
 	if (!customer) {
 		cout << "Login failed. Invalid username or PIN." << endl;
-		return;
+		return false;
 	}
-
 	cout << "Welcome, " << customer->getName() << "!" << endl;
 	customerMenu(customer, bank);
+	return true; // Login successful
 }
 
 void customerMenu(Customer* customer, Bank& bank) {
@@ -181,7 +197,8 @@ void customerMenu(Customer* customer, Bank& bank) {
 		cout << "3. Deposit\n";
 		cout << "4. Withdraw\n";
 		cout << "5. Transfer Funds\n";
-		cout << "6. Logout\n";
+		cout << "6. Close Account\n";
+		cout << "7. Logout\n";
 		cout << "What would you like to do today? ";
 
 		int choice;
@@ -195,7 +212,7 @@ void customerMenu(Customer* customer, Bank& bank) {
 
 			int accountNumber = bank.generateAccountNumber();
 			if (bank.addAccountForCustomer(customer->getId(), to_string(accountNumber), initialBalance)) {
-				cout << "Your Account has been created! Your account number is: " +  to_string(accountNumber) << endl;
+				cout << "Your Account has been created! Your account number is: " + to_string(accountNumber) << endl;
 			}
 			break;
 		}
@@ -241,7 +258,7 @@ void customerMenu(Customer* customer, Bank& bank) {
 				cin >> amount;
 				account->withdraw(amount); // Adjust balance in memory
 				if (bank.updateAccountBalance(account->getId(), account->getBalance())) {
-					cout << "Deposit successful. New balance: " << account->getBalance() << endl;
+					cout << "Withdraw successful. New balance: " << account->getBalance() << endl;
 				}
 			}
 			else {
@@ -279,17 +296,49 @@ void customerMenu(Customer* customer, Bank& bank) {
 				}
 			}
 			else {
-				cout << "invlaid account numbers." << endl;
+				cout << "invalid account numbers." << endl;
 			}
 			break;
 		}
 
-		case LOGOUT:
+		case CLOSE_ACCOUNT: {
+			string fromAccount, toAccount;
+			double amount;
+			cout << "Enter account number you wish to close: ";
+			cin >> fromAccount;
+			cout << "Enter account number you wish to send funds to: ";
+			cin >> toAccount;
+
+			Account* sender = bank.getAccountByNumber(fromAccount);
+			Account* receiver = bank.getAccountByNumber(toAccount);
+
+			amount = sender->getBalance();
+
+			if (sender && receiver) {
+				Transfer transfer(*sender, *receiver);
+				transfer.setAmount(amount);
+				sender->withdraw(amount);
+				receiver->deposit(amount);
+				if (bank.updateAccountBalance(sender->getId(), sender->getBalance()) && bank.updateAccountBalance(receiver->getId(), receiver->getBalance())) {
+					cout << "Transfer successful!" << endl;
+				}
+			}
+			else {
+				cout << "Invalid account numbers." << endl;
+			}
+
+			bank.accountRemoveAccount(sender->getAccountNum());
+			break;
+		}
+
+		case LOGOUT: {
 			cout << "You've been logged out." << endl;
 			return;
-		
-		default: 
+		}
+
+		default: {
 			cout << INVALID_OPTION << endl;
+		}
 		}
 	}
 }
@@ -649,10 +698,10 @@ void printDollarSign(int frame, int row, int col) {
 // Function for MU logo
 void printMU() {
 	// Print the letter M and U side by side
-	cout << "				$     $  $     $" << endl;  // Row 1
-	cout << "				$$   $$  $     $" << endl;  // Row 2
-	cout << "				$ $ $ $  $     $" << endl;  // Row 3
-	cout << "				$  $  $  $     $" << endl;  // Row 4
-	cout << "				$     $  $$$$$$$" << endl;  // Row 5
+	cout << "			     |\\      /|   |       | " << endl;  // Row 1
+	cout << "			     | \\    / |   |       | " << endl;  // Row 2
+	cout << "			     |  \\  /  |   |       | " << endl;  // Row 3
+	cout << "			     |   \\/   |   |       | " << endl;  // Row 4
+	cout << "			     |        |   |_______| " << endl;  // Row 5
 }
 
