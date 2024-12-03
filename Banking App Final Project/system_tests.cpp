@@ -40,8 +40,8 @@ TEST(SystemTest, CreateAccount) {
 	Bank testBank("test.db");
 
 	cout << "Step 1: Register a new customer...\n";
-	testBank.registerCustomer("Zachary C", "xXxZacAttacxXx", "5678");
-	Customer* customer = testBank.login("xXxZacAttacxXx", "5678");
+	testBank.registerCustomer("Zachary C", "xXxZacAttacxXx", "0707");
+	Customer* customer = testBank.login("xXxZacAttacxXx", "0707");
 
 	// Create new accounts
 	cout << "Step 2: Create two new accounts...\n";

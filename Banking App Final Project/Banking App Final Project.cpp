@@ -704,4 +704,3 @@ void printMU() {
 	cout << "			     |   \\/   |   |       | " << endl;  // Row 4
 	cout << "			     |        |   |_______| " << endl;  // Row 5
 }
-
