@@ -207,9 +207,18 @@ void customerMenu(Customer* customer, Bank& bank) {
 		switch (choice) {
 		case NEW_ACCOUNT: {
 			double initialBalance;
+			bool repeat = false;
 			cout << "Enter initial balance: ";
-			cin >> initialBalance;
-
+			do {
+				repeat = false;
+				cin >> initialBalance;
+				if (initialBalance < 0) {
+					cout << "Invalid input. Your account cannot be created with a negative balance. "
+						"Please enter a positive balance or 0 to create your account.\n";
+					repeat = true;
+					cout << "Enter initial balance: ";
+				}
+			} while (repeat);
 			int accountNumber = bank.generateAccountNumber();
 			if (bank.addAccountForCustomer(customer->getId(), to_string(accountNumber), initialBalance)) {
 				cout << "Your Account has been created! Your account number is: " + to_string(accountNumber) << endl;
