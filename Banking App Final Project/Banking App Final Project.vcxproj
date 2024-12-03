@@ -132,17 +132,27 @@
   <ItemGroup>
     <ClCompile Include="Account.cpp" />
     <ClCompile Include="Bank.cpp" />
-    <ClCompile Include="Banking App Final Project.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="Customer.cpp" />
+    <ClCompile Include="CustomerMenu.cpp" />
     <ClCompile Include="sqlite3.c" />
+    <ClCompile Include="SQLiteFunctions.cpp" />
     <ClCompile Include="Transfer.cpp" />
+    <ClCompile Include="UIHelpers.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Account.h" />
     <ClInclude Include="Bank.h" />
     <ClInclude Include="Customer.h" />
+    <ClInclude Include="CustomerMenu.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="sqlite3.h" />
+    <ClInclude Include="SQLiteFunctions.h" />
     <ClInclude Include="Transfer.h" />
+    <ClInclude Include="UIHelpers.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Banking App Final Project.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
