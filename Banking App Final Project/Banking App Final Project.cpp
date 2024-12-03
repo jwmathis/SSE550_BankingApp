@@ -70,8 +70,7 @@ void printMU();
 int main() {
 	// Open/Create the database
 	const char* databaseDir = "MercerBank.db"; 
-	createDB(databaseDir);
-	createTable(databaseDir);
+
 	Bank MercerBank(databaseDir); //initialize bank and database
 	bool exitFlag = false;
 

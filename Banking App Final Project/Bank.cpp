@@ -9,7 +9,11 @@ Bank::Bank(const string& dbName) {
 		db = nullptr;
 	}
 	else {
-		cout << "Database opened successfully." << endl;
+		//cout << "Database opened successfully." << endl;
+
+		if (!createTables()) {
+			cerr << "Failed to create tables in database." << endl;
+		}
 	}
 }
 
@@ -18,7 +22,40 @@ Bank::~Bank() {
 		sqlite3_close(db);
 	}
 }
+bool Bank::createTables() {
+	string sqlUsersTable = "CREATE TABLE IF NOT EXISTS users ( "
+		"id INTEGER PRIMARY KEY AUTOINCREMENT, "
+		"name TEXT NOT NULL, "
+		"username TEXT NOT NULL UNIQUE, "
+		"pin TEXT NOT NULL);";
 
+	string sqlAccountsTable = "CREATE TABLE IF NOT EXISTS accounts ( "
+		"account_id INTEGER PRIMARY KEY AUTOINCREMENT, "
+		"user_id INTEGER NOT NULL, "
+		"account_number TEXT NOT NULL, "
+		"balance DOUBLE NOT NULL DEFAULT 0.0, "
+		"FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE);";
+
+	char* messageError = nullptr;
+
+	// Create Users table
+	if (sqlite3_exec(db, sqlUsersTable.c_str(), nullptr, 0, &messageError) != SQLITE_OK) {
+		cerr << "Error creating users table" << messageError << endl;
+		sqlite3_free(messageError);
+		return false;
+	}
+	//cout << "Users table created successfully" << endl;
+		
+	// Create accounts table
+	if (sqlite3_exec(db, sqlAccountsTable.c_str(), nullptr, 0, &messageError) != SQLITE_OK) {
+		cerr << "Error creating accounts table" << messageError << endl;
+		sqlite3_free(messageError);
+		return false;
+	}
+	//cout << "Accounts table created successfully" << endl;
+
+	return true;
+}
 bool Bank::executeSQL(const string& query, sqlite3_stmt** stmt) {
 	if (sqlite3_prepare_v2(db, query.c_str(), -1, stmt, nullptr) != SQLITE_OK) {
 		cerr << "SQL error: " << sqlite3_errmsg(db) << endl;
@@ -43,15 +80,15 @@ int Bank::getUserId(const string& username) {
 
 bool Bank::registerCustomer(const string& name, const string& username, const string& pin) {
 	if (getUserId(username) != -1) {
-		cerr << "Error: Username already exists." << endl;
+		cerr << "Error: Failed to register user. Username already exists." << endl;
 		return false;
 	}
 
 	string sql("INSERT INTO users (name, username, pin) VALUES ( '" + name + "', '" + username + "', '" + pin + "');");
 	char* messageError;
 
-	if (sqlite3_exec(db, sql.c_str(), NULL, 0, &messageError) != SQLITE_OK) {
-		cerr << "Error inserting user data into database" << endl;
+	if (sqlite3_exec(db, sql.c_str(), nullptr, 0, &messageError) != SQLITE_OK) {
+		cerr << "Error: Could not insert user data into database" << endl;
 		sqlite3_free(messageError);
 		return false;
 	}

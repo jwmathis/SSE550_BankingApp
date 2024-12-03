@@ -10,6 +10,7 @@ class Bank
 private:
 	sqlite3* db;
 
+	bool createTables();
 	bool executeSQL(const string& query, sqlite3_stmt** stmt = nullptr);
 	int getUserId(const string& username);
 	int accountNumberCounter = 100000;
