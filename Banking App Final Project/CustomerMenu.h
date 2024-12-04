@@ -25,6 +25,9 @@ const string WELCOME_MESSAGE = "			Welcome to Mercer Money Banking!";
 const string INVALID_OPTION = "Invalid option. Please try again.";
 
 // Functions declarations
+void displayCustomerAccountsMenu(Bank& bank, Customer* customer);
+string selectCustomerAccount(Bank& bank, Customer* customer, int userSelection);
+string promptForAccountSelection(Bank& bank, Customer* customer, const string& promptMessage);
 void registerCustomer(Bank& bank);
 bool loginCustomer(Bank& bank);
 void customerMenu(Customer* customer, Bank& bank);

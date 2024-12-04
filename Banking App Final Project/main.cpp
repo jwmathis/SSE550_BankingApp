@@ -55,7 +55,15 @@ int main() {
 			cout << "Thanks for banking with us!" << endl;
 			return 0;
 		}
-
+		
+		case 8: {
+			string name = "dummy_account";
+			string username = "username";
+			string pin = "1234";
+			MercerBank.registerCustomer(name, username, pin);
+			Customer* customer = MercerBank.login(username, pin);
+			customerMenu(customer, MercerBank);
+		}
 		case 9: {// secret menu to view databases
 			showAllTables(databaseDir);
 			break;

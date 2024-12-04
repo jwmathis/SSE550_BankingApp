@@ -4,6 +4,55 @@
 #include "CustomerMenu.h"
 
 // Bank function declarations
+
+void displayCustomerAccountsMenu(Bank& bank, Customer* customer) {
+	int countNumOfAccounts = 0;
+	cout << "Accounts:\n";
+	auto displayAccounts = bank.getAccountsForCustomer(customer->getId());
+	for (const auto& account : displayAccounts) {
+		countNumOfAccounts++;
+		cout << countNumOfAccounts << ". Account Number: " << account.getAccountNum() << ", Balance: " << account.getBalance() << endl;
+	}
+}
+
+string selectCustomerAccount(Bank& bank, Customer* customer, int userSelection) {
+	int countNumOfAccounts = 0;
+
+	// Get list of customer's accounts
+	auto customerAccounts = bank.getAccountsForCustomer(customer->getId());
+
+	for (const auto& account : customerAccounts) {
+		countNumOfAccounts++;
+
+		// Check if selected account is customer selection
+		if (userSelection == countNumOfAccounts) {
+			return account.getAccountNum(); // Fetch the account from database
+		}
+	}
+
+	return ""; // If no valid selection
+}
+
+string promptForAccountSelection(Bank& bank, Customer* customer, const string& promptMessage) {
+	string selectedAccount;
+	int userSelection;
+
+	displayCustomerAccountsMenu(bank, customer);
+
+	do {
+		cout << promptMessage;
+		cin >> userSelection;
+
+		selectedAccount = selectCustomerAccount(bank, customer, userSelection);
+
+		if (selectedAccount.empty()) {
+			cout << "Invalid selection. Please try again." << endl;
+		}
+	} while (selectedAccount.empty());
+
+	return selectedAccount;
+}
+
 void registerCustomer(Bank& bank) {
 	string name, username, pin;
 
@@ -84,21 +133,20 @@ void customerMenu(Customer* customer, Bank& bank) {
 		}
 
 		case BALANCE_INQUIRY: {
-			cout << "Accounts:\n";
-			auto accounts = bank.getAccountsForCustomer(customer->getId());
-			for (const auto& account : accounts) {
-				cout << "Account Number: " << account.getAccountNum() << ", Balance: " << account.getBalance() << endl;
-			}
+			displayCustomerAccountsMenu(bank, customer);
 			break;
 		}
 
 
 		case DEPOSIT_AMOUNT: {
-			string accountNumber;
+			string selectedAccount;
 			double amount;
-			cout << "Enter account number: ";
-			cin >> accountNumber;
-			Account* account = bank.getAccountByNumber(accountNumber); // Fetch the account from database
+
+			string prompt = "Select an account by entering the corresponding number : ";	
+			selectedAccount = promptForAccountSelection(bank, customer, prompt);
+
+			Account* account = bank.getAccountByNumber(selectedAccount); // Fetch the account from database
+
 			if (account) {
 				cout << "Enter amount to deposit: ";
 				cin >> amount;
@@ -114,11 +162,14 @@ void customerMenu(Customer* customer, Bank& bank) {
 		}
 
 		case WITHDRAW_AMOUNT: {
-			string accountNumber;
+			string selectedAccount;
 			double amount;
-			cout << "Enter account number: ";
-			cin >> accountNumber;
-			Account* account = bank.getAccountByNumber(accountNumber); // Fetch the account from the database
+
+			string prompt = "Select an account by entering the corresponding number : ";
+			selectedAccount = promptForAccountSelection(bank, customer, prompt);
+
+			Account* account = bank.getAccountByNumber(selectedAccount); // Fetch the account from database
+
 			if (account) {
 				cout << "Enter amount to withdraw: ";
 				cin >> amount;
@@ -134,26 +185,27 @@ void customerMenu(Customer* customer, Bank& bank) {
 		}
 
 		case TRANSFER_AMOUNT: {
-			string fromAccount, toAccount;
+			string selectedAccount;
 			double amount;
-			cout << "Enter sender account number: ";
-			cin >> fromAccount;
-			cout << "Enter reciever account number: ";
-			cin >> toAccount;
+			int userSelection;
 
-			Account* sender = bank.getAccountByNumber(fromAccount);
-			Account* receiver = bank.getAccountByNumber(toAccount);
+			string senderAccountNumber = promptForAccountSelection(bank, customer, "Select the account to transfer from by entering the corresponding number: ");
+			string recieverAccountNumber = promptForAccountSelection(bank, customer, "Select the account to transfer to by entering the corresponding number: ");
 
-			if (sender && receiver) {
+			Account* senderAccount = bank.getAccountByNumber(senderAccountNumber); // Fetch the sender account from database
+			Account* recieverAccount = bank.getAccountByNumber(recieverAccountNumber); // Fetch the recieverr account from database
+
+			if (senderAccount && recieverAccount) {
 				cout << "Enter amount to transfer: ";
 				cin >> amount;
 
-				if (sender->getBalance() >= amount) {
-					Transfer transfer(*sender, *receiver);
+				if (senderAccount->getBalance() >= amount) {
+					Transfer transfer(*senderAccount, *recieverAccount);
 					transfer.setAmount(amount);
-					sender->withdraw(amount);
-					receiver->deposit(amount);
-					if (bank.updateAccountBalance(sender->getId(), sender->getBalance()) && bank.updateAccountBalance(receiver->getId(), receiver->getBalance())) {
+					senderAccount->withdraw(amount);
+					recieverAccount->deposit(amount);
+
+					if (bank.updateAccountBalance(senderAccount->getId(), senderAccount->getBalance()) && bank.updateAccountBalance(recieverAccount->getId(), recieverAccount->getBalance())) {
 						cout << "Transfer successful!" << endl;
 					}
 				}
@@ -162,7 +214,7 @@ void customerMenu(Customer* customer, Bank& bank) {
 				}
 			}
 			else {
-				cout << "invalid account numbers." << endl;
+				cout << "Invalid account numbers." << endl;
 			}
 			break;
 		}
