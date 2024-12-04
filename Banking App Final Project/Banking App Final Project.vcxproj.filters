@@ -13,63 +13,75 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\Classes">
+      <UniqueIdentifier>{c74a0ff3-1847-4dc6-80d9-770f878b0775}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ModularizedFunctions">
+      <UniqueIdentifier>{a0f07f27-5174-4ad5-8418-f91a6b80ad15}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Class Header Files">
+      <UniqueIdentifier>{41eef9bd-ab66-444d-9e21-8bd2444aa4ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Modularized Header Files">
+      <UniqueIdentifier>{6d3cb793-4b2c-4818-ad7b-206334093cd7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Account.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Customer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Transfer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Bank.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="sqlite3.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SQLiteFunctions.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Account.cpp">
+      <Filter>Source Files\Classes</Filter>
     </ClCompile>
-    <ClCompile Include="UIHelpers.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Bank.cpp">
+      <Filter>Source Files\Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="Customer.cpp">
+      <Filter>Source Files\Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="Transfer.cpp">
+      <Filter>Source Files\Classes</Filter>
     </ClCompile>
     <ClCompile Include="CustomerMenu.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ModularizedFunctions</Filter>
+    </ClCompile>
+    <ClCompile Include="SQLiteFunctions.cpp">
+      <Filter>Source Files\ModularizedFunctions</Filter>
+    </ClCompile>
+    <ClCompile Include="UIHelpers.cpp">
+      <Filter>Source Files\ModularizedFunctions</Filter>
+    </ClCompile>
+    <ClCompile Include="sqlite3.c">
+      <Filter>Source Files\ModularizedFunctions</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Account.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Customer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Transfer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Bank.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="sqlite3.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SQLiteFunctions.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="UIHelpers.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Account.h">
+      <Filter>Header Files\Class Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Bank.h">
+      <Filter>Header Files\Class Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Customer.h">
+      <Filter>Header Files\Class Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Transfer.h">
+      <Filter>Header Files\Class Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CustomerMenu.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Modularized Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SQLiteFunctions.h">
+      <Filter>Header Files\Modularized Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UIHelpers.h">
+      <Filter>Header Files\Modularized Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sqlite3.h">
+      <Filter>Header Files\Modularized Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
