@@ -63,6 +63,7 @@ int main() {
 			MercerBank.registerCustomer(name, username, pin);
 			Customer* customer = MercerBank.login(username, pin);
 			customerMenu(customer, MercerBank);
+			break;
 		}
 		case 9: {// secret menu to view databases
 			showAllTables(databaseDir);

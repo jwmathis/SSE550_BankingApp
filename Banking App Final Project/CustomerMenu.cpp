@@ -220,24 +220,25 @@ void customerMenu(Customer* customer, Bank& bank) {
 		}
 
 		case CLOSE_ACCOUNT: {
-			string fromAccount, toAccount;
+
+			string selectedAccount;
 			double amount;
-			cout << "Enter account number you wish to close: ";
-			cin >> fromAccount;
-			cout << "Enter account number you wish to send funds to: ";
-			cin >> toAccount;
+			int userSelection;
 
-			Account* sender = bank.getAccountByNumber(fromAccount);
-			Account* receiver = bank.getAccountByNumber(toAccount);
+			string senderAccountNumber = promptForAccountSelection(bank, customer, "Select the account you wish to close: ");
+			string recieverAccountNumber = promptForAccountSelection(bank, customer, "Select the account you wish to transfer money to: ");
 
-			amount = sender->getBalance();
+			Account* senderAccount = bank.getAccountByNumber(senderAccountNumber); // Fetch the sender account from database
+			Account* recieverAccount = bank.getAccountByNumber(recieverAccountNumber); // Fetch the recieverr account from database
 
-			if (sender && receiver) {
-				Transfer transfer(*sender, *receiver);
+			amount = senderAccount->getBalance();
+
+			if (senderAccount && recieverAccount) {
+				Transfer transfer(*senderAccount, *recieverAccount);
 				transfer.setAmount(amount);
-				sender->withdraw(amount);
-				receiver->deposit(amount);
-				if (bank.updateAccountBalance(sender->getId(), sender->getBalance()) && bank.updateAccountBalance(receiver->getId(), receiver->getBalance())) {
+				senderAccount->withdraw(amount);
+				recieverAccount->deposit(amount);
+				if (bank.updateAccountBalance(senderAccount->getId(), senderAccount->getBalance()) && bank.updateAccountBalance(recieverAccount->getId(), recieverAccount->getBalance())) {
 					cout << "Transfer successful!" << endl;
 				}
 			}
@@ -245,7 +246,7 @@ void customerMenu(Customer* customer, Bank& bank) {
 				cout << "Invalid account numbers." << endl;
 			}
 
-			bank.accountRemoveAccount(sender->getAccountNum());
+			bank.accountRemoveAccount(senderAccount->getAccountNum());
 			break;
 		}
 
