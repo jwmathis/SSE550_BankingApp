@@ -9,7 +9,7 @@ TEST(SystemTest, RegisterCustomer) {
 
 	cout << "Step 1: Registering a new customer...\n";
 	// Register a new customer
-	ASSERT_TRUE(testBank.registerCustomer("John Mathis", "jmathis7", "1234"));
+	ASSERT_TRUE(testBank.registerCustomer("John Mathis", "jmathis7", "1113"));
 
 	cout << "Step 2: Attempting to register a duplicate username...\n";
 	// Try to register a customer with the same username
@@ -62,33 +62,88 @@ TEST(SystemTest, CreateAccount) {
 }
 
 // Test Case 4
-//TEST(SystemTest, DepositFunds) {}
+TEST(SystemTest, DepositFunds) {
+	Bank testBank("test.db");
+	cout << "Step 1: Login...\n";
+	Customer* customer = testBank.login("xXxZacAttacxXx", "0707");
+
+	// Create new accounts
+	cout << "Step 2: Create a new account...\n";
+	int accNum = testBank.generateAccountNumber();
+	ASSERT_TRUE(testBank.addAccountForCustomer(customer->getId(), to_string(accNum), 1000.00));
+
+	// Check account creation
+	cout << "Step 3: Check account balance...\n";
+	Account* account1 = testBank.getAccountByNumber(to_string(accNum));
+	account1->deposit(500.00);
+	EXPECT_EQ(account1->getBalance(), 1500.00);
+}
 
 //// Test Case 5
-//TEST(SystemTest, WithdrawFunds) {}
-//
-//// Test Case 6
-//TEST(SystemTest, TransferFunds) {}
-//
-////  Test Case 7
-//TEST(SystemTest, CheckBalances) {}
-// 
-//// Test Case 8
-//TEST(SystemTest, InvalidAccountNumber) {
-//	Bank testBank("test.db");
-//	
-//	int accountNumber = testBank.generateAccountNumber();
-//	// Check if account exists
-//	ASSERT_FALSE(testBank.accountNumberExists(to_string(accountNumber)));
-//}
+TEST(SystemTest, WithdrawFunds_SufficientFunds) {
+	Bank testBank("test.db");
+	cout << "Step 1: Login...\n";
+	Customer* customer = testBank.login("jmathis7", "1113");
 
-// Test Case 9
+	// Create new accounts
+	cout << "Step 2: Create a new account...\n";
+	int accNum = testBank.generateAccountNumber();
+	ASSERT_TRUE(testBank.addAccountForCustomer(customer->getId(), to_string(accNum), 1000.00));
+
+	// Check account creation
+	cout << "Step 3: Check account balance...\n";
+	Account* account1 = testBank.getAccountByNumber(to_string(accNum));
+	account1->withdraw(500.00);
+	EXPECT_EQ(account1->getBalance(), 500.00);
+}
+
+// Test Case 6
+TEST(SystemTest, WithdrawFunds_InsufficientFunds) {
+	Bank testBank("test.db");
+	cout << "Step 1: Login...\n";
+	Customer* customer = testBank.login("jmathis7", "1113");
+
+	// Create new accounts
+	cout << "Step 2: Create a new account...\n";
+	int accNum = testBank.generateAccountNumber();
+	ASSERT_TRUE(testBank.addAccountForCustomer(customer->getId(), to_string(accNum), 1000.00));
+
+	// Check account creation
+	cout << "Step 3: Check account balance...\n";
+	Account* account1 = testBank.getAccountByNumber(to_string(accNum));
+	testing::internal::CaptureStderr();
+
+	account1->withdraw(2000.00);
+	string output = testing::internal::GetCapturedStderr();
+	EXPECT_EQ(output, "Error: Insufficient funds.\n");
+}
+// Test Case 7
+TEST(SystemTest, BalanceValidation) {
+	Bank testBank("test.db");
+	cout << "Step 1: Login...\n";
+	Customer* customer = testBank.login("xXxZacAttacxXx", "0707");
+
+	// Create new accounts
+	cout << "Step 2: Create a new account...\n";
+	int accNum = testBank.generateAccountNumber();
+	testBank.addAccountForCustomer(customer->getId(), to_string(accNum), 1000.00);
+	cout << "Step 3: Withdrawal #1...\n";
+	Account* account1 = testBank.getAccountByNumber(to_string(accNum));
+	account1->withdraw(500.00);
+	cout << "Step 4: Deposit #1...\n";
+	account1->deposit(12.00);
+	cout << "Step 5: Deposit #2...\n";
+	account1->deposit(180.00);
+	EXPECT_EQ(account1->getBalance(), 692.00);
+}
+
+// Test Case 8
 TEST(SystemTest, DatabasePersistance) {
 	Bank testBank("test.db");
 
 	// Register and create accounts
-	ASSERT_TRUE(testBank.registerCustomer("John Mathis", "jwmathis7", "1113"));
-	Customer* customer = testBank.login("jwmathis7", "1113");
+	ASSERT_TRUE(testBank.registerCustomer("Trish N", "trish123", "1234"));
+	Customer* customer = testBank.login("trish123", "1234");
 	int accNum = testBank.generateAccountNumber();
 	ASSERT_TRUE(testBank.addAccountForCustomer(customer->getId(), to_string(accNum), 1000.00));
 
@@ -97,13 +152,32 @@ TEST(SystemTest, DatabasePersistance) {
 	Bank newTestBank("test.db");
 
 	// Verify data persistance in database
-	Customer* reloadedCustomer = newTestBank.login("jwmathis7", "1113");
+	Customer* reloadedCustomer = newTestBank.login("trish123", "1234");
 	ASSERT_NE(reloadedCustomer, nullptr);
 	Account* reloadedAccount = newTestBank.getAccountByNumber(to_string(accNum));
 	ASSERT_NE(reloadedAccount, nullptr);
 	EXPECT_EQ(reloadedAccount->getBalance(), 1000.00);
 }
 
+// Test Case 9
+TEST(SystemTest, AccountDeletion) {
+	Bank testBank("test.db");
+
+	cout << "Step 1: Register a new customer...\n";
+	testBank.registerCustomer("Corbin Jones", "corb", "5678");
+	Customer* customer = testBank.login("corb", "5678");
+	cout << "Step 2: Create new account...\n";
+	int accNum = testBank.generateAccountNumber();
+	testBank.addAccountForCustomer(customer->getId(), to_string(accNum), 3000.00);
+	Account* account = testBank.getAccountByNumber(to_string(accNum));
+	cout << "Step 3: Check if account exist...\n";
+	EXPECT_EQ(account->getBalance(), 3000.00);
+
+	cout << "Step 4: Delete account...\n";
+	testBank.accountRemoveAccount(account->getAccountNum());
+	cout << "Step 5: Check if account was deleted...\n";
+	ASSERT_EQ(testBank.getAccountByNumber(to_string(accNum)), nullptr);
+}
 // Main defined for testing execution
 int main(int argc, char** argv) {
 	::testing::InitGoogleTest(&argc, argv);
