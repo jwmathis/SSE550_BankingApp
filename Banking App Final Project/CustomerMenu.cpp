@@ -72,8 +72,27 @@ void registerCustomer(Bank& bank) {
 	if (bank.registerCustomer(name, username, pin)) {
 		Customer* customer = bank.login(username, pin);
 		cout << "You've been registered " << customer->getName() << "! Thanks for signing up!" << endl;
+		double initialBalance;
+		bool repeat = false;
+		cout << "Let's Open your first account!" << endl;
+		cout << "Enter initial balance: ";
+		do {
+			repeat = false;
+			cin >> initialBalance;
+			if (initialBalance < 0) {
+				cout << "Invalid input. Your account cannot be created with a negative balance. "
+					"Please enter a positive balance or 0 to create your account.\n";
+				repeat = true;
+				cout << "Enter initial balance: ";
+			}
+		} while (repeat);
+		int accountNumber = bank.generateAccountNumber();
+		if (bank.addAccountForCustomer(customer->getId(), to_string(accountNumber), initialBalance)) {
+			cout << "Your Account has been created! Your account number is: " + to_string(accountNumber) << endl;
+		}
 		customerMenu(customer, bank);
 	}
+
 }
 
 bool loginCustomer(Bank& bank) {

@@ -156,10 +156,11 @@ void printDollarSign(int frame, int row, int col) {
 // Function for MU logo
 void printMU() {
 	// Print the letter M and U side by side
-	cout << "			     |\\      /|   |       | " << endl;  // Row 1
-	cout << "			     | \\    / |   |       | " << endl;  // Row 2
-	cout << "			     |  \\  /  |   |       | " << endl;  // Row 3
-	cout << "			     |   \\/   |   |       | " << endl;  // Row 4
-	cout << "			     |        |   |_______| " << endl;  // Row 5
+	cout << "			     ||\\\\      //||   ||       || " << endl;  // Row 1
+	cout << "			     || \\\\    // ||   ||       || " << endl;  // Row 2
+	cout << "			     ||  \\\\  //  ||   ||       || " << endl;  // Row 3
+	cout << "			     ||   \\\\//   ||   ||       || " << endl;  // Row 4
+	cout << "			     ||          ||   ||       || " << endl;  // Row 5
+	cout << "                             ||          ||   ===========" << endl;  // Row 6
 }
 
