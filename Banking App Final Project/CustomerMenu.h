@@ -31,3 +31,5 @@ string promptForAccountSelection(Bank& bank, Customer* customer, const string& p
 void registerCustomer(Bank& bank);
 bool loginCustomer(Bank& bank);
 void customerMenu(Customer* customer, Bank& bank);
+void newCustomer(Customer* customer, Bank& bank);
+
