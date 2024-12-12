@@ -1,7 +1,9 @@
 #include <iostream>
 #include <string>
 #include <algorithm>
+#include <cstdio>
 #include "CustomerMenu.h"
+#include "Customer.h"
 
 // Bank function declarations
 
@@ -163,6 +165,7 @@ void customerMenu(Customer* customer, Bank& bank) {
 		case DEPOSIT_AMOUNT: {
 			string selectedAccount;
 			double amount;
+			string transaction;
 
 			string prompt = "Select an account by entering the corresponding number : ";	
 			selectedAccount = promptForAccountSelection(bank, customer, prompt);
@@ -174,7 +177,9 @@ void customerMenu(Customer* customer, Bank& bank) {
 				cin >> amount;
 				account->deposit(amount); // Adjust balance in memory
 				if (bank.updateAccountBalance(account->getId(), account->getBalance())) {
-					cout << "Deposit successful. New balance: " << account->getBalance() << endl;
+					transaction = "Deposit successful. New balance: " + to_string(account->getBalance());
+					cout << transaction << endl;
+					customer->generateTransactionReceipt(transaction);
 				}
 			}
 			else {
@@ -273,6 +278,8 @@ void customerMenu(Customer* customer, Bank& bank) {
 		}
 
 		case LOGOUT: {
+			string filename = customer->generateTransactionReceiptFilename();
+			remove(filename.c_str());
 			cout << "You've been logged out." << endl;
 			return;
 		}

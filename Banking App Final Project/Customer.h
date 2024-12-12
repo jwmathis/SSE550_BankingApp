@@ -23,4 +23,6 @@ public:
 
 	// Behavior methods
 	bool verifyPin(const string& inputPin) const; // Method to validate PIN
+	string generateTransactionReceiptFilename();
+	void generateTransactionReceipt(const string& transaction);
 };
