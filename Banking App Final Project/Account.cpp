@@ -42,3 +42,7 @@ void Account::deposit(double amount) {
 		cerr << "Error: Deposit amount must be positive." << endl;
 	}
 }
+
+void Account::applyInterest() {
+	cout << "No interest" << endl;
+}

@@ -4,16 +4,19 @@
 #include <cstdio>
 #include "CustomerMenu.h"
 #include "Customer.h"
+#include "SavingsAccount.h"
 
 // Bank function declarations
 
 void displayCustomerAccountsMenu(Bank& bank, Customer* customer) {
 	int countNumOfAccounts = 0;
+	string accountType;
 	cout << "Accounts:\n";
 	auto displayAccounts = bank.getAccountsForCustomer(customer->getId());
 	for (const auto& account : displayAccounts) {
 		countNumOfAccounts++;
-		cout << countNumOfAccounts << ". Account Number: " << account.getAccountNum() << ", Balance: " << account.getBalance() << endl;
+		accountType = (account.getAccountNum()[0] == '2') ? "Savings" : "Regular";
+		cout << countNumOfAccounts << ". Account Type: " << accountType << ", Account Number : " << account.getAccountNum() << ", Balance : " << account.getBalance() << endl;
 	}
 }
 
@@ -93,7 +96,7 @@ void newCustomer(Customer* customer, Bank& bank) {
 			cout << "Enter initial balance: ";
 		}
 	} while (repeat);
-	int accountNumber = bank.generateAccountNumber();
+	int accountNumber = bank.generateAccountNumber(REGULAR_ACCOUNT);
 	if (bank.addAccountForCustomer(customer->getId(), to_string(accountNumber), initialBalance)) {
 		cout << "Your Account has been created! Your account number is: " + to_string(accountNumber) << endl;
 	}
@@ -122,20 +125,21 @@ bool loginCustomer(Bank& bank) {
 void customerMenu(Customer* customer, Bank& bank) {
 	while (true) {
 		cout << "\nCustomer Menu:\n";
-		cout << "1. Open Account\n";
-		cout << "2. View Accounts\n";
-		cout << "3. Deposit\n";
-		cout << "4. Withdraw\n";
-		cout << "5. Transfer Funds\n";
-		cout << "6. Close Account\n";
-		cout << "7. Logout\n";
+		cout << "1. Open Regular Account\n";
+		cout << "2. Open Savings Account\n";
+		cout << "3. View Accounts\n";
+		cout << "4. Deposit\n";
+		cout << "5. Withdraw\n";
+		cout << "6. Transfer Funds\n";
+		cout << "7. Close Account\n";
+		cout << "8. Logout\n";
 		cout << "What would you like to do today? ";
 
 		int choice;
 		cin >> choice;
 
 		switch (choice) {
-		case NEW_ACCOUNT: {
+		case REG_ACCOUNT: {
 			double initialBalance;
 			bool repeat = false;
 			cout << "Enter initial balance: ";
@@ -149,9 +153,32 @@ void customerMenu(Customer* customer, Bank& bank) {
 					cout << "Enter initial balance: ";
 				}
 			} while (repeat);
-			int accountNumber = bank.generateAccountNumber();
+			int accountNumber = bank.generateAccountNumber(REGULAR_ACCOUNT);
 			if (bank.addAccountForCustomer(customer->getId(), to_string(accountNumber), initialBalance)) {
 				cout << "Your Account has been created! Your account number is: " + to_string(accountNumber) << endl;
+			}
+			break;
+		}
+		
+		case SAVINGS_ACC: {
+			double initialBalance;
+			double interestRate = 0.3;
+			bool repeat = false;
+			cout << "Enter initial balance: ";
+			do {
+				repeat = false;
+				cin >> initialBalance;
+				if (initialBalance < 0) {
+					cout << "Invalid input. Your account cannot be created with a negative balance. "
+						"Please enter a positive balance or 0 to create your account.\n";
+					repeat = true;
+					cout << "Enter initial balance: ";
+				}
+			} while (repeat);
+			int accountNumber = bank.generateAccountNumber(SAVINGS_ACCOUNT);
+			if (bank.addAccountForCustomer(customer->getId(), to_string(accountNumber), initialBalance)) {
+				SavingsAccount savingsAccount(accountNumber, to_string(accountNumber), initialBalance, interestRate);
+				cout << "Your Saviongs account has been created! Your account number is: " + to_string(accountNumber) << endl;
 			}
 			break;
 		}

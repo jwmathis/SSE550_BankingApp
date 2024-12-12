@@ -11,13 +11,19 @@ enum MainMenuOption {
 };
 
 enum CustomerMenuOption {
-	NEW_ACCOUNT = 1,
+	REG_ACCOUNT = 1,
+	SAVINGS_ACC,
 	BALANCE_INQUIRY,
 	DEPOSIT_AMOUNT,
 	WITHDRAW_AMOUNT,
 	TRANSFER_AMOUNT,
 	CLOSE_ACCOUNT,
 	LOGOUT
+};
+
+enum AccountTypeOption {
+	REGULAR_ACCOUNT = 1,
+	SAVINGS_ACCOUNT
 };
 
 // Constants

@@ -135,6 +135,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Customer.cpp" />
     <ClCompile Include="CustomerMenu.cpp" />
+    <ClCompile Include="SavingsAccount.cpp" />
     <ClCompile Include="sqlite3.c" />
     <ClCompile Include="SQLiteFunctions.cpp" />
     <ClCompile Include="Transfer.cpp" />
@@ -146,6 +147,7 @@
     <ClInclude Include="Customer.h" />
     <ClInclude Include="CustomerMenu.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="SavingsAccount.h" />
     <ClInclude Include="sqlite3.h" />
     <ClInclude Include="SQLiteFunctions.h" />
     <ClInclude Include="Transfer.h" />

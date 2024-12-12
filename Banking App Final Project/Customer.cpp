@@ -28,14 +28,21 @@ string Customer::generateTransactionReceiptFilename() {
 }
 
 void Customer::generateTransactionReceipt(const string& transaction) {
-	string filename = generateTransactionReceiptFilename();
-	ofstream outputFile(filename);
+	try {
+		string filename = generateTransactionReceiptFilename();
+		ofstream outputFile(filename);
+		// Check if file opened successfully
+		if (!outputFile.is_open()) {
+			throw ios_base::failure("Failed to open file: " + filename);
+		}
 
-	if (outputFile.is_open()) {
-		outputFile << transaction << endl;
+		// Write to file
+		outputFile << "Transaction: " << transaction << "\n";
+		outputFile << "------------------------------------------\n";
+		cout << "Transaction logged to reciept." << endl;
+		outputFile.close();
 	}
-
-	outputFile.close();
-
-
+	catch (const ios_base::failure& e) {
+		cerr << "Unexpected error occurred: " << e.what() << endl;
+	}
 }

@@ -3,6 +3,7 @@
 #include <iostream>
 #include "sqlite3.h"
 #include "Customer.h"
+#include "SavingsAccount.h"
 using namespace std;
 
 class Bank
@@ -26,7 +27,7 @@ public:
 	Account* getAccountByNumber(const string& accountNumber);
 	bool updateAccountBalance(int accountId, double newBalance);
 	bool accountRemoveAccount(const string& accountNumber);
-	int generateAccountNumber();
+	int generateAccountNumber(const int accountType);
 	bool accountNumberExists(const string& accountNumber);
 };
 

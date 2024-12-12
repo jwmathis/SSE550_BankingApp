@@ -180,13 +180,17 @@ bool Bank::updateAccountBalance(int accountId, double newBalance) {
 	return true;
 }
 
-int Bank::generateAccountNumber() {
+int Bank::generateAccountNumber(const int accountType) {
 	int accountNumber;
 	srand(time(0));
 
 	do {
-		accountNumber = (rand() % 900000) + 100000;
-
+		if (accountType == 2) {// Savings account
+			accountNumber = (rand() % 100000) + 200000;
+		}
+		else {
+			accountNumber = (rand() % 100000) + 100000;
+		}
 	} while (accountNumberExists(to_string(accountNumber)));
 
 	return accountNumber;
