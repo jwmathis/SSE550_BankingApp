@@ -33,6 +33,9 @@
     <ClCompile Include="..\Banking App Final Project\sqlite3.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\Banking App Final Project\SavingsAccount.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Banking App Final Project\Account.h">
@@ -48,6 +51,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\Banking App Final Project\sqlite3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Banking App Final Project\SavingsAccount.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -130,6 +130,7 @@
     <ClCompile Include="..\Banking App Final Project\Account.cpp" />
     <ClCompile Include="..\Banking App Final Project\Bank.cpp" />
     <ClCompile Include="..\Banking App Final Project\Customer.cpp" />
+    <ClCompile Include="..\Banking App Final Project\SavingsAccount.cpp" />
     <ClCompile Include="..\Banking App Final Project\sqlite3.c" />
     <ClCompile Include="..\Banking App Final Project\system_tests.cpp" />
     <ClCompile Include="..\Banking App Final Project\Transfer.cpp" />
@@ -143,6 +144,7 @@
     <ClInclude Include="..\Banking App Final Project\Account.h" />
     <ClInclude Include="..\Banking App Final Project\Bank.h" />
     <ClInclude Include="..\Banking App Final Project\Customer.h" />
+    <ClInclude Include="..\Banking App Final Project\SavingsAccount.h" />
     <ClInclude Include="..\Banking App Final Project\sqlite3.h" />
     <ClInclude Include="..\Banking App Final Project\Transfer.h" />
   </ItemGroup>
