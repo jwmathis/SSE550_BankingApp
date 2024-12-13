@@ -1,2 +1,0 @@
-Transaction: Transfer successful! New balance of account is: 200.000000
-------------------------------------------

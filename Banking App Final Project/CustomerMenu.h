@@ -22,7 +22,7 @@ enum CustomerMenuOption {
 };
 
 enum AccountTypeOption {
-	REGULAR_ACCOUNT = 1,
+	CHECKING_ACCOUNT = 1,
 	SAVINGS_ACCOUNT
 };
 

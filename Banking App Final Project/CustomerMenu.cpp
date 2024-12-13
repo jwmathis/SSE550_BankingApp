@@ -96,7 +96,7 @@ void newCustomer(Customer* customer, Bank& bank) {
 			cout << "Enter initial balance: ";
 		}
 	} while (repeat);
-	int accountNumber = bank.generateAccountNumber(REGULAR_ACCOUNT);
+	int accountNumber = bank.generateAccountNumber(1);
 	if (bank.addAccountForCustomer(customer->getId(), to_string(accountNumber), initialBalance)) {
 		cout << "Your Account has been created! Your account number is: " + to_string(accountNumber) << endl;
 	}
@@ -153,7 +153,7 @@ void customerMenu(Customer* customer, Bank& bank) {
 					cout << "Enter initial balance: ";
 				}
 			} while (repeat);
-			int accountNumber = bank.generateAccountNumber(REGULAR_ACCOUNT);
+			int accountNumber = bank.generateAccountNumber(1);
 			if (bank.addAccountForCustomer(customer->getId(), to_string(accountNumber), initialBalance)) {
 				cout << "Your Account has been created! Your account number is: " + to_string(accountNumber) << endl;
 			}

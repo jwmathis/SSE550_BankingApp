@@ -30,7 +30,7 @@ string Customer::generateTransactionReceiptFilename() {
 void Customer::generateTransactionReceipt(const string& transaction) {
 	try {
 		string filename = generateTransactionReceiptFilename();
-		ofstream outputFile(filename);
+		ofstream outputFile(filename, ios::app);
 		// Check if file opened successfully
 		if (!outputFile.is_open()) {
 			throw ios_base::failure("Failed to open file: " + filename);
