@@ -1,30 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites tests="10" failures="1" disabled="0" errors="0" time="0.157" timestamp="2024-12-12T18:57:32.008" name="AllTests">
-  <testsuite name="SystemTest" tests="10" failures="1" disabled="0" skipped="0" errors="0" time="0.156" timestamp="2024-12-12T18:57:32.008">
-    <testcase name="RegisterCustomer" file="C:\Users\John Wesley\source\repos\SSE550_BankingApp\Banking App Final Project\system_tests.cpp" line="8" status="run" result="completed" time="0.024" timestamp="2024-12-12T18:57:32.008" classname="SystemTest" />
-    <testcase name="LoginCustomer" file="C:\Users\John Wesley\source\repos\SSE550_BankingApp\Banking App Final Project\system_tests.cpp" line="21" status="run" result="completed" time="0.007" timestamp="2024-12-12T18:57:32.033" classname="SystemTest" />
-    <testcase name="CreateAccount" file="C:\Users\John Wesley\source\repos\SSE550_BankingApp\Banking App Final Project\system_tests.cpp" line="40" status="run" result="completed" time="0.02" timestamp="2024-12-12T18:57:32.041" classname="SystemTest" />
-    <testcase name="DepositFunds" file="C:\Users\John Wesley\source\repos\SSE550_BankingApp\Banking App Final Project\system_tests.cpp" line="66" status="run" result="completed" time="0.007" timestamp="2024-12-12T18:57:32.062" classname="SystemTest" />
-    <testcase name="WithdrawFunds_SufficientFunds" file="C:\Users\John Wesley\source\repos\SSE550_BankingApp\Banking App Final Project\system_tests.cpp" line="84" status="run" result="completed" time="0.007" timestamp="2024-12-12T18:57:32.069" classname="SystemTest" />
-    <testcase name="WithdrawFunds_InsufficientFunds" file="C:\Users\John Wesley\source\repos\SSE550_BankingApp\Banking App Final Project\system_tests.cpp" line="102" status="run" result="completed" time="0.008" timestamp="2024-12-12T18:57:32.077" classname="SystemTest" />
-    <testcase name="BalanceValidation" file="C:\Users\John Wesley\source\repos\SSE550_BankingApp\Banking App Final Project\system_tests.cpp" line="122" status="run" result="completed" time="0.009" timestamp="2024-12-12T18:57:32.086" classname="SystemTest" />
-    <testcase name="TransferFunds" file="C:\Users\John Wesley\source\repos\SSE550_BankingApp\Banking App Final Project\system_tests.cpp" line="142" status="run" result="completed" time="0.034" timestamp="2024-12-12T18:57:32.095" classname="SystemTest">
-      <failure message="C:\Users\John Wesley\source\repos\SSE550_BankingApp\Banking App Final Project\system_tests.cpp:166&#x0A;Expected equality of these values:&#x0A;  senderAccount-&gt;getBalance()&#x0A;    Which is: 700&#x0A;  1300.00&#x0A;    Which is: 1300&#x0A;" type=""><![CDATA[C:\Users\John Wesley\source\repos\SSE550_BankingApp\Banking App Final Project\system_tests.cpp:166
-Expected equality of these values:
-  senderAccount->getBalance()
-    Which is: 700
-  1300.00
-    Which is: 1300
-]]></failure>
-      <failure message="C:\Users\John Wesley\source\repos\SSE550_BankingApp\Banking App Final Project\system_tests.cpp:167&#x0A;Expected equality of these values:&#x0A;  recieverAccount-&gt;getBalance()&#x0A;    Which is: 800&#x0A;  200.00&#x0A;    Which is: 200&#x0A;" type=""><![CDATA[C:\Users\John Wesley\source\repos\SSE550_BankingApp\Banking App Final Project\system_tests.cpp:167
-Expected equality of these values:
-  recieverAccount->getBalance()
-    Which is: 800
-  200.00
-    Which is: 200
-]]></failure>
-    </testcase>
-    <testcase name="DatabasePersistance" file="C:\Users\John Wesley\source\repos\SSE550_BankingApp\Banking App Final Project\system_tests.cpp" line="171" status="run" result="completed" time="0.014" timestamp="2024-12-12T18:57:32.130" classname="SystemTest" />
-    <testcase name="AccountDeletion" file="C:\Users\John Wesley\source\repos\SSE550_BankingApp\Banking App Final Project\system_tests.cpp" line="193" status="run" result="completed" time="0.02" timestamp="2024-12-12T18:57:32.145" classname="SystemTest" />
+<testsuites tests="10" failures="0" disabled="0" errors="0" time="0.167" timestamp="2024-12-12T19:45:01.376" name="AllTests">
+  <testsuite name="SystemTest" tests="10" failures="0" disabled="0" skipped="0" errors="0" time="0.167" timestamp="2024-12-12T19:45:01.377">
+    <testcase name="RegisterCustomer" file="C:\Users\John Wesley\source\repos\SSE550_BankingApp\Banking App Final Project\system_tests.cpp" line="8" status="run" result="completed" time="0.024" timestamp="2024-12-12T19:45:01.377" classname="SystemTest" />
+    <testcase name="LoginCustomer" file="C:\Users\John Wesley\source\repos\SSE550_BankingApp\Banking App Final Project\system_tests.cpp" line="21" status="run" result="completed" time="0.007" timestamp="2024-12-12T19:45:01.402" classname="SystemTest" />
+    <testcase name="CreateAccount" file="C:\Users\John Wesley\source\repos\SSE550_BankingApp\Banking App Final Project\system_tests.cpp" line="40" status="run" result="completed" time="0.02" timestamp="2024-12-12T19:45:01.410" classname="SystemTest" />
+    <testcase name="DepositFunds" file="C:\Users\John Wesley\source\repos\SSE550_BankingApp\Banking App Final Project\system_tests.cpp" line="66" status="run" result="completed" time="0.007" timestamp="2024-12-12T19:45:01.431" classname="SystemTest" />
+    <testcase name="WithdrawFunds_SufficientFunds" file="C:\Users\John Wesley\source\repos\SSE550_BankingApp\Banking App Final Project\system_tests.cpp" line="84" status="run" result="completed" time="0.012" timestamp="2024-12-12T19:45:01.439" classname="SystemTest" />
+    <testcase name="WithdrawFunds_InsufficientFunds" file="C:\Users\John Wesley\source\repos\SSE550_BankingApp\Banking App Final Project\system_tests.cpp" line="102" status="run" result="completed" time="0.014" timestamp="2024-12-12T19:45:01.452" classname="SystemTest" />
+    <testcase name="BalanceValidation" file="C:\Users\John Wesley\source\repos\SSE550_BankingApp\Banking App Final Project\system_tests.cpp" line="122" status="run" result="completed" time="0.008" timestamp="2024-12-12T19:45:01.467" classname="SystemTest" />
+    <testcase name="TransferFunds" file="C:\Users\John Wesley\source\repos\SSE550_BankingApp\Banking App Final Project\system_tests.cpp" line="142" status="run" result="completed" time="0.032" timestamp="2024-12-12T19:45:01.475" classname="SystemTest" />
+    <testcase name="DatabasePersistance" file="C:\Users\John Wesley\source\repos\SSE550_BankingApp\Banking App Final Project\system_tests.cpp" line="171" status="run" result="completed" time="0.015" timestamp="2024-12-12T19:45:01.508" classname="SystemTest" />
+    <testcase name="AccountDeletion" file="C:\Users\John Wesley\source\repos\SSE550_BankingApp\Banking App Final Project\system_tests.cpp" line="193" status="run" result="completed" time="0.019" timestamp="2024-12-12T19:45:01.524" classname="SystemTest" />
   </testsuite>
 </testsuites>

@@ -118,27 +118,8 @@ TEST(SystemTest, WithdrawFunds_InsufficientFunds) {
 	string output = testing::internal::GetCapturedStderr();
 	EXPECT_EQ(output, "Error: Insufficient funds.\n");
 }
+
 // Test Case 7
-TEST(SystemTest, BalanceValidation) {
-	Bank testBank("test.db");
-	cout << "Step 1: Login...\n";
-	Customer* customer = testBank.login("xXxZacAttacxXx", "0707");
-
-	// Create new accounts
-	cout << "Step 2: Create a new account...\n";
-	int accNum = testBank.generateAccountNumber(1);
-	testBank.addAccountForCustomer(customer->getId(), to_string(accNum), 1000.00);
-	cout << "Step 3: Withdrawal #1...\n";
-	Account* account1 = testBank.getAccountByNumber(to_string(accNum));
-	account1->withdraw(500.00);
-	cout << "Step 4: Deposit #1...\n";
-	account1->deposit(12.00);
-	cout << "Step 5: Deposit #2...\n";
-	account1->deposit(180.00);
-	EXPECT_EQ(account1->getBalance(), 692.00);
-}
-
-// Test Case 8
 TEST(SystemTest, TransferFunds) {
 	Bank testBank("test.db");
 	testBank.registerCustomer("Colin", "colingreens", "1111");
@@ -163,8 +144,28 @@ TEST(SystemTest, TransferFunds) {
 	testBank.updateAccountBalance(senderAccount->getId(), senderAccount->getBalance());
 	testBank.updateAccountBalance(recieverAccount->getId(), recieverAccount->getBalance());
 
-	EXPECT_EQ(senderAccount->getBalance(), 1300.00);
-	EXPECT_EQ(recieverAccount->getBalance(), 200.00);
+	EXPECT_EQ(senderAccount->getBalance(), 700.00);
+	EXPECT_EQ(recieverAccount->getBalance(), 800.00);
+}
+
+// Test Case 8
+TEST(SystemTest, BalanceValidation) {
+	Bank testBank("test.db");
+	cout << "Step 1: Login...\n";
+	Customer* customer = testBank.login("xXxZacAttacxXx", "0707");
+
+	// Create new accounts
+	cout << "Step 2: Create a new account...\n";
+	int accNum = testBank.generateAccountNumber(1);
+	testBank.addAccountForCustomer(customer->getId(), to_string(accNum), 1000.00);
+	cout << "Step 3: Withdrawal #1...\n";
+	Account* account1 = testBank.getAccountByNumber(to_string(accNum));
+	account1->withdraw(500.00);
+	cout << "Step 4: Deposit #1...\n";
+	account1->deposit(12.00);
+	cout << "Step 5: Deposit #2...\n";
+	account1->deposit(180.00);
+	EXPECT_EQ(account1->getBalance(), 692.00);
 }
 
 // Test Case 9
