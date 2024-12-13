@@ -204,7 +204,7 @@ void customerMenu(Customer* customer, Bank& bank) {
 				cin >> amount;
 				account->deposit(amount); // Adjust balance in memory
 				if (bank.updateAccountBalance(account->getId(), account->getBalance())) {
-					transaction = "Deposit successful. New balance: " + to_string(account->getBalance());
+					transaction = "Deposit successful! New balance: " + to_string(account->getBalance());
 					cout << transaction << endl;
 					customer->generateTransactionReceipt(transaction);
 				}
@@ -218,6 +218,7 @@ void customerMenu(Customer* customer, Bank& bank) {
 		case WITHDRAW_AMOUNT: {
 			string selectedAccount;
 			double amount;
+			string transaction;
 
 			string prompt = "Select an account by entering the corresponding number : ";
 			selectedAccount = promptForAccountSelection(bank, customer, prompt);
@@ -229,7 +230,9 @@ void customerMenu(Customer* customer, Bank& bank) {
 				cin >> amount;
 				account->withdraw(amount); // Adjust balance in memory
 				if (bank.updateAccountBalance(account->getId(), account->getBalance())) {
-					cout << "Withdraw successful. New balance: " << account->getBalance() << endl;
+					transaction = "Withdraw successful! New balance: " + to_string(account->getBalance());
+					cout << transaction << endl;
+					customer->generateTransactionReceipt(transaction);
 				}
 			}
 			else {
@@ -242,6 +245,7 @@ void customerMenu(Customer* customer, Bank& bank) {
 			string selectedAccount;
 			double amount;
 			int userSelection;
+			string transaction;
 
 			string senderAccountNumber = promptForAccountSelection(bank, customer, "Select the account to transfer from by entering the corresponding number: ");
 			string recieverAccountNumber = promptForAccountSelection(bank, customer, "Select the account to transfer to by entering the corresponding number: ");
@@ -260,7 +264,10 @@ void customerMenu(Customer* customer, Bank& bank) {
 					recieverAccount->deposit(amount);
 
 					if (bank.updateAccountBalance(senderAccount->getId(), senderAccount->getBalance()) && bank.updateAccountBalance(recieverAccount->getId(), recieverAccount->getBalance())) {
-						cout << "Transfer successful!" << endl;
+						transaction = "Transfer successful! New balance of your account is: " + to_string(recieverAccount->getBalance());
+						cout << transaction << endl;
+						customer->generateTransactionReceipt(transaction);
+
 					}
 				}
 				else {
@@ -278,6 +285,7 @@ void customerMenu(Customer* customer, Bank& bank) {
 			string selectedAccount;
 			double amount;
 			int userSelection;
+			string transaction;
 
 			string senderAccountNumber = promptForAccountSelection(bank, customer, "Select the account you wish to close: ");
 			string recieverAccountNumber = promptForAccountSelection(bank, customer, "Select the account you wish to transfer money to: ");
@@ -293,7 +301,9 @@ void customerMenu(Customer* customer, Bank& bank) {
 				senderAccount->withdraw(amount);
 				recieverAccount->deposit(amount);
 				if (bank.updateAccountBalance(senderAccount->getId(), senderAccount->getBalance()) && bank.updateAccountBalance(recieverAccount->getId(), recieverAccount->getBalance())) {
-					cout << "Transfer successful!" << endl;
+					transaction = "Transfer successful! New balance of your account is: " + to_string(recieverAccount->getBalance());
+					cout << transaction << endl;
+					customer->generateTransactionReceipt(transaction);
 				}
 			}
 			else {
