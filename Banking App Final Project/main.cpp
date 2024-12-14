@@ -21,7 +21,18 @@ int main() {
 
 	cout << "Press enter to continue...\n";
 	displayWelcomeAnimation();
-
+	clearScreen();
+	cout << "                                          $$        " << endl;
+	cout << "                                         $$$$       " << endl;
+	cout << "                                       $$$  $$$     " << endl;
+	cout << "                                      $$  $$  $$    " << endl;
+	cout << "                                      $$  $$          " << endl;
+	cout << "                                       $$$$$$$$$       " << endl;
+	cout << "                                          $$   $$      " << endl;
+	cout << "                                      $$  $$   $$    " << endl;
+	cout << "                                       $$$  $$$     " << endl;
+	cout << "                                         $$$$       " << endl;
+	cout << "                                          $$        " << endl;
 	// Display Main menu options
 	while (true) {
 
