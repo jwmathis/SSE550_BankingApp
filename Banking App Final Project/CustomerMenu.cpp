@@ -6,8 +6,18 @@
 #include "Customer.h"
 #include "SavingsAccount.h"
 
-// Bank function declarations
+#include <iostream>
+#include <string>
+#include "SQLiteFunctions.h"
+#include "UIHelpers.h"
+#include "CustomerMenu.h"
 
+// include files for FTXUI
+#include <ftxui\component\component.hpp>
+#include <ftxui\component\screen_interactive.hpp>
+#include <ftxui\dom\elements.hpp>
+using namespace ftxui;
+// Bank function declarations
 void displayCustomerAccountsMenu(Bank& bank, Customer* customer) {
 	int countNumOfAccounts = 0;
 	string accountType;
@@ -59,26 +69,65 @@ string promptForAccountSelection(Bank& bank, Customer* customer, const string& p
 }
 
 void registerCustomer(Bank& bank) {
+	auto screen = ScreenInteractive::TerminalOutput();
+	
 	string name, username, pin;
+	string error_message = "";
 
-	cout << "Enter your full legal name: ";
-	cin.ignore(); // Error handling to allow any name to be entered
-	getline(cin, name);
+	auto nameInput = Input(&name, "Full Legal Name: ");
+	auto usernameInput = Input(&username, "Username: ");
+	auto pinInput = Input(&pin, "PIN: ");
 
-	cout << "Choose your username: ";
-	cin >> username;
+	auto submitButton = Button("Register", [&] {
+		if (pin.length() != 4 || !all_of(pin.begin(), pin.end(), ::isdigit)) {
+			error_message = "Error: PIN must be exactly 4 digits.";
+			return;
+		}
 
-	cout << "Enter a 4-digit PIN for account registration: ";
-	cin >> pin;
-	if (pin.length() != 4 || !all_of(pin.begin(), pin.end(), ::isdigit)) {
-		cout << "Error: PIN must be exactly 4 digits." << endl;
-		return;
-	}
-	if (bank.registerCustomer(name, username, pin)) {
-		Customer* customer = bank.login(username, pin);
-		cout << "You've been registered " << customer->getName() << "! Thanks for signing up!" << endl;
-		newCustomer(customer, bank);
-	}
+		if (bank.registerCustomer(name, username, pin)) {
+			Customer* customer = bank.login(username, pin);
+			if (customer) {
+				screen.Exit();
+				cout << "You've been registered " << customer->getName() << "! Thanks for signing up!" << endl;
+				newCustomer(customer, bank);
+			}
+		}
+		else {
+			error_message = "Error: Failed to register user. Username already exists.";
+		}
+
+	});
+
+	auto exitButton = Button("Cancel", [&] { screen.Exit(); });
+
+	auto layout = Container::Vertical({
+		nameInput,
+		usernameInput,
+		pinInput,
+		Container::Horizontal({
+			submitButton,
+			exitButton
+			}),
+		});
+
+	auto renderer = Renderer(layout, [&] {
+		return vbox({
+			text("Register New Account") | bold | center,
+			separator(),
+			text("Enter your details below:"),
+			nameInput->Render(),
+			usernameInput->Render(),
+			pinInput->Render(),
+			hbox({
+				submitButton->Render() | center,
+				exitButton->Render() | center,
+				}),
+			error_message.empty() ? text("") : text(error_message) | color(Color::Red),
+			}) | border;
+		});
+
+	screen.Loop(renderer);
+	system("cls");
 }
 
 //New registered customers will go straight to Option 1 to open an account

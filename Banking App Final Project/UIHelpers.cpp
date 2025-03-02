@@ -5,7 +5,9 @@
 #include "UIHelpers.h"
 
 using namespace std;
-
+const string green = "\033[32m";
+const string orange = "\033[38;5;214m";
+const string reset = "\033[0m";
 void displayWelcomeAnimation() {
 	const int frames = 6; // Total number of frames for the spin
 	bool exitFlag = false;
@@ -37,6 +39,7 @@ void moveToPosition(int row, int col) {
 
 void printDollarSign(int frame, int row, int col) {
 	moveToPosition(row, col);
+	cout << green;
 	switch (frame) {
 	case 0: // Initial frame
 		cout << "      $$$$       " << endl;
@@ -155,6 +158,7 @@ void printDollarSign(int frame, int row, int col) {
 
 // Function for MU logo
 void printMU() {
+	cout << orange;
 	// Print the letter M and U side by side
 	cout << "			     ||\\\\      //||   ||       || " << endl;  // Row 1
 	cout << "			     || \\\\    // ||   ||       || " << endl;  // Row 2
@@ -162,5 +166,6 @@ void printMU() {
 	cout << "			     ||   \\\\//   ||   ||       || " << endl;  // Row 4
 	cout << "			     ||          ||   ||       || " << endl;  // Row 5
 	cout << "                             ||          ||   ===========" << endl;  // Row 6
+	cout << reset;
 }
 
