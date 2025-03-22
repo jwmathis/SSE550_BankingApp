@@ -10,12 +10,12 @@
 // include files for FTXUI
 #include <functional>
 #include <vector>
-#include "ftxui\component\captured_mouse.hpp"
-#include "ftxui\component\component.hpp"
-#include "ftxui\component\component_base.hpp"
-#include "ftxui\component\component_options.hpp"
-#include "ftxui\component\screen_interactive.hpp"
-#include "ftxui\dom\elements.hpp"
+#include <ftxui\component\captured_mouse.hpp>
+#include <ftxui\component\component.hpp>
+#include <ftxui\component\component_base.hpp>
+#include <ftxui\component\component_options.hpp>
+#include <ftxui\component\screen_interactive.hpp>
+#include <ftxui\dom\elements.hpp>
 #include <memory>
 using namespace std;
 using namespace ftxui;

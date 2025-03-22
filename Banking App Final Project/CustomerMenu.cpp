@@ -13,9 +13,9 @@
 #include "CustomerMenu.h"
 
 // include files for FTXUI
-#include "ftxui\component\component.hpp"
-#include "ftxui\component\screen_interactive.hpp"
-#include "ftxui\dom\elements.hpp"
+#include <ftxui\component\component.hpp>
+#include <ftxui\component\screen_interactive.hpp>
+#include <ftxui\dom\elements.hpp>
 using namespace ftxui;
 // Bank function declarations
 void displayCustomerAccountsMenu(Bank& bank, Customer* customer) {

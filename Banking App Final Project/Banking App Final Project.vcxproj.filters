@@ -25,9 +25,6 @@
     <Filter Include="Header Files\Modularized Header Files">
       <UniqueIdentifier>{6d3cb793-4b2c-4818-ad7b-206334093cd7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\FTXUI">
-      <UniqueIdentifier>{2dc8a7ad-ec32-4689-b00e-6992d1dc5876}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -91,96 +88,6 @@
     </ClInclude>
     <ClInclude Include="SavingsAccount.h">
       <Filter>Header Files\Class Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\Tools\FTXUI\include\ftxui\component\animation.hpp">
-      <Filter>Header Files\FTXUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\Tools\FTXUI\include\ftxui\component\captured_mouse.hpp">
-      <Filter>Header Files\FTXUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\Tools\FTXUI\include\ftxui\component\component.hpp">
-      <Filter>Header Files\FTXUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\Tools\FTXUI\include\ftxui\component\component_base.hpp">
-      <Filter>Header Files\FTXUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\Tools\FTXUI\include\ftxui\component\component_options.hpp">
-      <Filter>Header Files\FTXUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\Tools\FTXUI\include\ftxui\component\event.hpp">
-      <Filter>Header Files\FTXUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\Tools\FTXUI\include\ftxui\component\loop.hpp">
-      <Filter>Header Files\FTXUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\Tools\FTXUI\include\ftxui\component\mouse.hpp">
-      <Filter>Header Files\FTXUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\Tools\FTXUI\include\ftxui\component\receiver.hpp">
-      <Filter>Header Files\FTXUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\Tools\FTXUI\include\ftxui\component\screen_interactive.hpp">
-      <Filter>Header Files\FTXUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\Tools\FTXUI\include\ftxui\component\task.hpp">
-      <Filter>Header Files\FTXUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\Tools\FTXUI\include\ftxui\dom\canvas.hpp">
-      <Filter>Header Files\FTXUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\Tools\FTXUI\include\ftxui\dom\deprecated.hpp">
-      <Filter>Header Files\FTXUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\Tools\FTXUI\include\ftxui\dom\direction.hpp">
-      <Filter>Header Files\FTXUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\Tools\FTXUI\include\ftxui\dom\elements.hpp">
-      <Filter>Header Files\FTXUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\Tools\FTXUI\include\ftxui\dom\flexbox_config.hpp">
-      <Filter>Header Files\FTXUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\Tools\FTXUI\include\ftxui\dom\linear_gradient.hpp">
-      <Filter>Header Files\FTXUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\Tools\FTXUI\include\ftxui\dom\node.hpp">
-      <Filter>Header Files\FTXUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\Tools\FTXUI\include\ftxui\dom\requirement.hpp">
-      <Filter>Header Files\FTXUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\Tools\FTXUI\include\ftxui\dom\table.hpp">
-      <Filter>Header Files\FTXUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\Tools\FTXUI\include\ftxui\dom\take_any_args.hpp">
-      <Filter>Header Files\FTXUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\Tools\FTXUI\include\ftxui\screen\box.hpp">
-      <Filter>Header Files\FTXUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\Tools\FTXUI\include\ftxui\screen\color.hpp">
-      <Filter>Header Files\FTXUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\Tools\FTXUI\include\ftxui\screen\color_info.hpp">
-      <Filter>Header Files\FTXUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\Tools\FTXUI\include\ftxui\screen\deprecated.hpp">
-      <Filter>Header Files\FTXUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\Tools\FTXUI\include\ftxui\screen\screen.hpp">
-      <Filter>Header Files\FTXUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\Tools\FTXUI\include\ftxui\screen\string.hpp">
-      <Filter>Header Files\FTXUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\Tools\FTXUI\include\ftxui\screen\terminal.hpp">
-      <Filter>Header Files\FTXUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\Tools\FTXUI\include\ftxui\util\autoreset.hpp">
-      <Filter>Header Files\FTXUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\Tools\FTXUI\include\ftxui\util\ref.hpp">
-      <Filter>Header Files\FTXUI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
