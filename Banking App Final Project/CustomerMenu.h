@@ -2,12 +2,7 @@
 #include "Bank.h"
 #include "Customer.h"
 #include "Transfer.h"
-#include <ftxui/component/component.hpp>  // For Button, Input, Renderer, Container, etc.
-#include <ftxui/component/screen_interactive.hpp>  // For ScreenInteractive
-#include <ftxui/dom/elements.hpp>  // For bold, border, text, separator, etc.
-#include <string>
-#include <iostream>
-#include <algorithm>
+
 // Enums for menu options
 enum MainMenuOption {
 	REGISTER = 1,
