@@ -4,6 +4,10 @@
 #include <conio.h>
 #include "UIHelpers.h"
 
+#define RESET "\033[0m"
+#define GREEN "\033[32m"
+#define ORANGE "\033[38;2;255;165;0m"
+
 using namespace std;
 
 void displayWelcomeAnimation() {
@@ -12,7 +16,7 @@ void displayWelcomeAnimation() {
 	while (!exitFlag) {
 		for (int i = 0; i < frames; ++i) {
 			//clearScreen(); // Clear the console
-			printDollarSign(i, 5, 20); // Print the current frame
+			printAnimatedDollarSign(i, 5, 20); // Print the current frame
 			std::this_thread::sleep_for(std::chrono::milliseconds(150)); // Pause for a moment
 
 			if (_kbhit()) {
@@ -35,7 +39,8 @@ void moveToPosition(int row, int col) {
 	cout << "\033[" << row << ";" << col << "H";
 }
 
-void printDollarSign(int frame, int row, int col) {
+void printAnimatedDollarSign(int frame, int row, int col) {
+	cout << GREEN;
 	moveToPosition(row, col);
 	switch (frame) {
 	case 0: // Initial frame
@@ -151,10 +156,28 @@ void printDollarSign(int frame, int row, int col) {
 		cout << "      $$$$       " << endl;
 		break;
 	}
+	cout << RESET;
+}
+
+void printDollarSign() {
+	cout << GREEN;
+	cout << "                                          $$        " << endl;
+	cout << "                                         $$$$       " << endl;
+	cout << "                                       $$$  $$$     " << endl;
+	cout << "                                      $$  $$  $$    " << endl;
+	cout << "                                      $$  $$          " << endl;
+	cout << "                                       $$$$$$$$$       " << endl;
+	cout << "                                          $$   $$      " << endl;
+	cout << "                                      $$  $$   $$    " << endl;
+	cout << "                                       $$$  $$$     " << endl;
+	cout << "                                         $$$$       " << endl;
+	cout << "                                          $$        " << endl;
+	cout << RESET;
 }
 
 // Function for MU logo
 void printMU() {
+	cout << ORANGE << endl;
 	// Print the letter M and U side by side
 	cout << "			     ||\\\\      //||   ||       || " << endl;  // Row 1
 	cout << "			     || \\\\    // ||   ||       || " << endl;  // Row 2
@@ -162,5 +185,6 @@ void printMU() {
 	cout << "			     ||   \\\\//   ||   ||       || " << endl;  // Row 4
 	cout << "			     ||          ||   ||       || " << endl;  // Row 5
 	cout << "                             ||          ||   ===========" << endl;  // Row 6
+	cout << RESET;
 }
 

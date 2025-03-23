@@ -5,9 +5,14 @@
 #include "CustomerMenu.h"
 #include "Customer.h"
 #include "SavingsAccount.h"
+#include <ftxui/component/component.hpp> // For button, input, renderer, container, etc
+#include <ftxui/component/screen_interactive.hpp> // For ScreenInteractive
+#include <ftxui/dom/elements.hpp> // For bold, border, text, separator, etc
+
+
+using namespace ftxui;
 
 // Bank function declarations
-
 void displayCustomerAccountsMenu(Bank& bank, Customer* customer) {
 	int countNumOfAccounts = 0;
 	string accountType;
@@ -59,48 +64,134 @@ string promptForAccountSelection(Bank& bank, Customer* customer, const string& p
 }
 
 void registerCustomer(Bank& bank) {
+	auto screen = ScreenInteractive::TerminalOutput();
+
 	string name, username, pin;
+	string error_message = "";
 
-	cout << "Enter your full legal name: ";
-	cin.ignore(); // Error handling to allow any name to be entered
-	getline(cin, name);
+	auto nameInput = Input(&name, "Full Legal Name: ");
+	auto usernameInput = Input(&username, "Username: ");
+	auto pinInput = Input(&pin, "PIN: ");
 
-	cout << "Choose your username: ";
-	cin >> username;
+	auto submitButton = Button("Register", [&] {
+		if (pin.length() != 4 || !all_of(pin.begin(), pin.end(), ::isdigit)) {
+			error_message = "Error: PIN must be exactly 4 digits.";
+			return;
+		}
 
-	cout << "Enter a 4-digit PIN for account registration: ";
-	cin >> pin;
-	if (pin.length() != 4 || !all_of(pin.begin(), pin.end(), ::isdigit)) {
-		cout << "Error: PIN must be exactly 4 digits." << endl;
-		return;
-	}
-	if (bank.registerCustomer(name, username, pin)) {
-		Customer* customer = bank.login(username, pin);
-		cout << "You've been registered " << customer->getName() << "! Thanks for signing up!" << endl;
-		newCustomer(customer, bank);
-	}
+		if (bank.registerCustomer(name, username, pin)) {
+			Customer* customer = bank.login(username, pin);
+			if (customer) {
+				screen.Exit();
+				text("You've been registered " + customer->getName() + "! Thanks for signing up!");
+				newCustomer(customer, bank); //New registered customers will go straight to Option 1 to open an account
+				screen.Exit(); // Exit the registration screen
+			}
+		}
+		else {
+			error_message = "Error: Failed to register user. Username already exists.";
+		}
+
+		});
+
+	auto exitButton = Button("Cancel", [&] { screen.Exit(); });
+
+	auto layout = Container::Vertical({
+		nameInput,
+		usernameInput,
+		pinInput,
+		Container::Horizontal({
+			submitButton,
+			exitButton
+			}),
+		});
+
+	auto renderer = Renderer(layout, [&] {
+		return vbox({
+			text("Register New Account") | bold | center,
+			separator(),
+			text("Enter your details below:"),
+			nameInput->Render(),
+			usernameInput->Render(),
+			pinInput->Render(),
+			hbox({
+				submitButton->Render() | center,
+				exitButton->Render() | center,
+				}),
+			error_message.empty() ? text("") : text(error_message) | color(Color::Red),
+			}) | border;
+		});
+
+	screen.Loop(renderer);
+	system("cls");
 }
 
 //New registered customers will go straight to Option 1 to open an account
 void newCustomer(Customer* customer, Bank& bank) {
-	double initialBalance;
-	bool repeat = false;
-	cout << "Enter initial balance: ";
-	do {
-		repeat = false;
-		cin >> initialBalance;
-		if (initialBalance < 0) {
-			cout << "Invalid input. Your account cannot be created with a negative balance. "
-				"Please enter a positive balance or 0 to create your account.\n";
-			repeat = true;
-			cout << "Enter initial balance: ";
-		}
-	} while (repeat);
-	int accountNumber = bank.generateAccountNumber(1);
-	if (bank.addAccountForCustomer(customer->getId(), to_string(accountNumber), initialBalance)) {
-		cout << "Your Account has been created! Your account number is: " + to_string(accountNumber) << endl;
-	}
+	system("cls");
+	auto screen = ScreenInteractive::TerminalOutput();
 
+	string initialBalanceString;
+	double initialBalance;
+	bool conversion_error = false;
+	string error_message = "";
+
+	auto initialBalanceInput = Input(&initialBalanceString, "Initial Balance: ");
+	auto submitButton = Button("Submit", [&] {
+		try {
+			initialBalance = stod(initialBalanceString);
+			if (initialBalance < 0) {
+				error_message = "Invalid input. Your account cannot be created with a negative balance. "
+					"Please enter a positive balance or 0 to create your account.\n";
+				return;
+			}
+		}
+		catch (const std::invalid_argument&) {
+			error_message = "Invalid input. Please enter a valid number.\n";
+			return;
+		}
+		catch (const std::out_of_range&) {
+			error_message = "Invalid input. Please enter a smaller number.\n";
+			return;
+		}
+
+		int accountNumber = bank.generateAccountNumber(1);
+		if (bank.addAccountForCustomer(customer->getId(), to_string(accountNumber), initialBalance)) {
+			text("Your Account has been created! Your account number is: " + to_string(accountNumber));
+			system("pause");
+			screen.Exit();
+		}
+		else {
+			error_message = "Error: Failed to create account. Please try again.";
+		}
+	});
+
+	auto exitButton = Button("Cancel", [&] { screen.Exit(); });
+
+	auto layout = Container::Vertical({
+		initialBalanceInput,
+		Container::Horizontal({
+			submitButton,
+			exitButton
+			}),
+		});
+
+	auto renderer = Renderer(layout, [&] {
+		return vbox({
+			text("Open New Account") | bold | center,
+			separator(),
+			text("Enter the inital balance for your new account below:"),
+			initialBalanceInput->Render(),
+			hbox({
+				submitButton->Render() | center,
+				exitButton->Render() | center,
+				}),
+			error_message.empty() ? text("") : text(error_message) | color(Color::Red),
+			}) | border;
+		});
+
+	screen.Loop(renderer);
+	system("cls");
 }
 
 bool loginCustomer(Bank& bank) {
