@@ -127,20 +127,7 @@ int main() {
 			cout << "Thanks for banking with us!" << endl;
 			return 0;
 		}
-		
-		case 8: {
-			string name = "dummy_account";
-			string username = "username";
-			string pin = "1234";
-			MercerBank.registerCustomer(name, username, pin);
-			Customer* customer = MercerBank.login(username, pin);
-			customerMenu(customer, MercerBank);
-			break;
-		}
-		case 9: {// secret menu to view databases
-			showAllTables(databaseDir);
-			break;
-		}
+
 
 		default:
 			cout << "Enter your choice: " << endl;
@@ -174,6 +161,21 @@ int main() {
 					cout << "Thanks for banking with us!" << endl;
 					return 0;
 				}
+
+				case 5: {
+					string name = "dummy_account";
+					string username = "username";
+					string pin = "1234";
+					MercerBank.registerCustomer(name, username, pin);
+					Customer* customer = MercerBank.login(username, pin);
+					customerMenu(customer, MercerBank);
+					break;
+				}
+				case 6: {// secret menu to view databases
+					showAllTables(databaseDir);
+					break;
+				}
+
 				default:
 					cout << INVALID_OPTION << endl;
 				}

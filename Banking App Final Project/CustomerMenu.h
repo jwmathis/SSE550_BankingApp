@@ -27,7 +27,7 @@ enum AccountTypeOption {
 };
 
 // Constants
-const string WELCOME_MESSAGE = "			   Welcome to Mercer Money Banking!";
+const string WELCOME_MESSAGE = "					Welcome to Mercer Money Banking!";
 const string INVALID_OPTION = "Invalid option. Please try again.";
 
 // Functions declarations
