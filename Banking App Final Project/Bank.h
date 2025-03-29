@@ -6,6 +6,7 @@
 #include "SavingsAccount.h"
 using namespace std;
 
+
 class Bank
 {
 private:
@@ -21,10 +22,12 @@ public:
 
 	bool registerCustomer(const string& name, const string& username, const string& pin);
 	Customer* login(const string& username, const string& pin);
+	bool addAccountForCustomer(int userId, const string& accountNumber, double initialBalance, const string& accountType);
+	template <typename T>
+	vector<Account<T>*> getAccountsForCustomer(int userId);
+	template <typename T>
+	Account<T>* getAccountByNumber(const string& accountNumber);
 
-	bool addAccountForCustomer(int userId, const string& accountNumber, double initialBalance);
-	vector<Account> getAccountsForCustomer(int userId);
-	Account* getAccountByNumber(const string& accountNumber);
 	bool updateAccountBalance(int accountId, double newBalance);
 	bool accountRemoveAccount(const string& accountNumber);
 	int generateAccountNumber(const int accountType);

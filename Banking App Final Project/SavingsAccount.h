@@ -1,16 +1,25 @@
 #pragma once
 
 #include "Account.h"
+#include <iostream>
+#include <string>
 
-class SavingsAccount : public Account {
+template <typename T>
+class SavingsAccount : public Account<T> {
 private:
-	double interestRate;
+	T interestRate;
 
 public:
-	SavingsAccount(int id, const string& accNum, double initialBalance, double interestRate);
+	SavingsAccount(int id, const string& accNum, double initialBalance, double interestRate) 
+		: Account<T>(id, accNum, initialBalance), interestRate(interestRate) {}
 
-	void applyInterest() override;
-
-	~SavingsAccount() override = default;
+	void applyInterest() override {
+		if (this->interestRate > 0) {
+			T interest = this->balance * this->interestRate;
+			this->balance += interest;
+		}
+		else {
+			cerr << "Error: Interest rate must be greater than 0." << endl;
+		}
+	}
 };
-

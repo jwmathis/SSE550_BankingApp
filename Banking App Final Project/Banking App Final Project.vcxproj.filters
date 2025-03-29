@@ -30,20 +30,11 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Account.cpp">
-      <Filter>Source Files\Classes</Filter>
-    </ClCompile>
     <ClCompile Include="Bank.cpp">
       <Filter>Source Files\Classes</Filter>
     </ClCompile>
     <ClCompile Include="Customer.cpp">
       <Filter>Source Files\Classes</Filter>
-    </ClCompile>
-    <ClCompile Include="Transfer.cpp">
-      <Filter>Source Files\Classes</Filter>
-    </ClCompile>
-    <ClCompile Include="CustomerMenu.cpp">
-      <Filter>Source Files\ModularizedFunctions</Filter>
     </ClCompile>
     <ClCompile Include="SQLiteFunctions.cpp">
       <Filter>Source Files\ModularizedFunctions</Filter>
@@ -54,8 +45,8 @@
     <ClCompile Include="sqlite3.c">
       <Filter>Source Files\ModularizedFunctions</Filter>
     </ClCompile>
-    <ClCompile Include="SavingsAccount.cpp">
-      <Filter>Source Files\Classes</Filter>
+    <ClCompile Include="CustomerMenu.cpp">
+      <Filter>Source Files\ModularizedFunctions</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

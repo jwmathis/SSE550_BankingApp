@@ -34,6 +34,7 @@ bool Bank::createTables() {
 		"user_id INTEGER NOT NULL, "
 		"account_number TEXT NOT NULL, "
 		"balance DOUBLE NOT NULL DEFAULT 0.0, "
+		"account_type TEXT NOT NULL, "
 		"FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE);";
 
 	char* messageError = nullptr;
@@ -110,10 +111,10 @@ Customer* Bank::login(const string& username, const string& pin) {
 	sqlite3_finalize(stmt);
 	return customer;
 }
-
-bool Bank::addAccountForCustomer(int userId, const string& accountNumber, double initialBalance) {
-	string sql = "INSERT INTO accounts (user_id, account_number, balance) VALUES (" +
-		to_string(userId) + ", '" + accountNumber + "', " + to_string(initialBalance) + ");";
+ 
+bool Bank::addAccountForCustomer(int userId, const string& accountNumber, double initialBalance, const string& accountType) {
+	string sql = "INSERT INTO accounts (user_id, account_number, balance, account_type) VALUES (" +
+		to_string(userId) + ", '" + accountNumber + "', " + to_string(initialBalance) + ", '" + accountType + "');";
 	char* errMessage = nullptr;
 
 	if (sqlite3_exec(db, sql.c_str(), nullptr, nullptr, &errMessage) != SQLITE_OK) {
@@ -123,10 +124,10 @@ bool Bank::addAccountForCustomer(int userId, const string& accountNumber, double
 	}
 	return true;
 }
-
-vector<Account> Bank::getAccountsForCustomer(int userId) {
-	vector<Account> accounts;
-	string sql = "SELECT account_id, account_number, balance FROM accounts WHERE user_id = " + to_string(userId) + ";";
+template <typename T>
+vector<Account<T>*> Bank::getAccountsForCustomer(int userId) {
+	vector<Account<T>*> accounts;
+	string sql = "SELECT account_id, account_number, balance, account_type FROM accounts WHERE user_id = " + to_string(userId) + ";";
 	sqlite3_stmt* stmt;
 
 	if (!executeSQL(sql, &stmt)) return accounts;
@@ -134,29 +135,49 @@ vector<Account> Bank::getAccountsForCustomer(int userId) {
 	while (sqlite3_step(stmt) == SQLITE_ROW) {
 		int accountId = sqlite3_column_int(stmt, 0);
 		string accountNumber = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
-		double balance = sqlite3_column_double(stmt, 2);
-		accounts.emplace_back(accountId, accountNumber, balance);
+		T balance = sqlite3_column_double(stmt, 2);
+		string accountType = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3));
+		
+		if (accountType == "Savings") {
+			T interestRate = 0.05;
+			accounts.push_back(new SavingsAccount<T>(accountId, accountNumber, balance, interestRate));
+		}
+		else {
+			accounts.push_back(new Account<T>(accountId, accountNumber, balance));
+		}
 	}
 	sqlite3_finalize(stmt);
 	return accounts;
 }
 
-Account* Bank::getAccountByNumber(const string& accountNumber) {
+template std::vector<Account<double>*> Bank::getAccountsForCustomer<double>(int);
+
+template <typename T>
+Account<T>* Bank::getAccountByNumber(const string& accountNumber) {
 	string sql = "SELECT account_id, account_number, balance FROM accounts WHERE account_number = '" + accountNumber + "'; ";
 	sqlite3_stmt* stmt;
 
 	if (!executeSQL(sql, &stmt)) return nullptr;
 
-	Account* account = nullptr;
+	Account<T>* account = nullptr;
 	if (sqlite3_step(stmt) == SQLITE_ROW) {
 		int accountId = sqlite3_column_int(stmt, 0);
 		string accNumber = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
-		double balance = sqlite3_column_double(stmt, 2);
-		account = new Account(accountId, accNumber, balance);
+		T balance = sqlite3_column_double(stmt, 2);
+		string accountType = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3));
+
+		if (accountType == "Savings") {
+			double interestRate = 0.05;
+			account = new SavingsAccount<T>(accountId, accNumber, balance, interestRate);
+		}
+		else {
+			account = new Account<T>(accountId, accNumber, balance);
+		}
 	}
 	sqlite3_finalize(stmt);
 	return account;
 }
+template Account<double>* Bank::getAccountByNumber<double>(const std::string&);
 
 bool Bank::updateAccountBalance(int accountId, double newBalance) {
 	string sql = "UPDATE accounts SET balance = ? WHERE account_id = ?;";
@@ -200,7 +221,7 @@ bool Bank::accountNumberExists(const string& accountNumber) {
 	string sql = "SELECT COUNT(*) FROM accounts WHERE account_number = '" + accountNumber + "';";
 	sqlite3_stmt* stmt;
 
-	if (!executeSQL(sql, &stmt)) return -1;
+	if (!executeSQL(sql, &stmt)) return false;
 
 	int count = 0;
 	if (sqlite3_step(stmt) == SQLITE_ROW) {

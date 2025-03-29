@@ -11,14 +11,13 @@ enum MainMenuOption {
 };
 
 enum CustomerMenuOption {
-	REG_ACCOUNT = 1,
-	SAVINGS_ACC,
+	NEW_ACCOUNT = 1,
 	BALANCE_INQUIRY,
 	DEPOSIT_AMOUNT,
 	WITHDRAW_AMOUNT,
 	TRANSFER_AMOUNT,
 	CLOSE_ACCOUNT,
-	LOGOUT
+	HISTORY,
 };
 
 enum AccountTypeOption {
@@ -32,10 +31,9 @@ const string INVALID_OPTION = "Invalid option. Please try again.";
 
 // Functions declarations
 void displayCustomerAccountsMenu(Bank& bank, Customer* customer);
-string selectCustomerAccount(Bank& bank, Customer* customer, int userSelection);
-string promptForAccountSelection(Bank& bank, Customer* customer, const string& promptMessage);
 void registerCustomer(Bank& bank);
 bool loginCustomer(Bank& bank);
+template <typename T> 
 void customerMenu(Customer* customer, Bank& bank);
 void newCustomer(Customer* customer, Bank& bank);
 

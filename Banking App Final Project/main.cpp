@@ -18,15 +18,6 @@
 #include <ftxui/dom/elements.hpp>
 #include <memory>
 
-#define RESET "\033[0m"
-#define BOLD "\033[1m"
-#define RED "\033[31m"
-#define GREEN "\033[32m"
-#define YELLOW "\033[33m"
-#define BLUE "\033[34m"
-#define MAGENTA "\033[35m"
-#define CYAN "\033[36m"
-#define ORANGE "\033[38;2;255;165;0m"
 
 using namespace std;
 using namespace ftxui;
@@ -168,11 +159,12 @@ int main() {
 					string pin = "1234";
 					MercerBank.registerCustomer(name, username, pin);
 					Customer* customer = MercerBank.login(username, pin);
-					customerMenu(customer, MercerBank);
+					customerMenu<double>(customer, MercerBank);
 					break;
 				}
 				case 6: {// secret menu to view databases
 					showAllTables(databaseDir);
+					system("pause");
 					break;
 				}
 

@@ -2,9 +2,22 @@
 #include <string>
 #include <iostream>
 #include <fstream>
-
+#include <ftxui/component/screen_interactive.hpp>
+#include <ftxui/dom/elements.hpp>
+#include <ftxui/component/component.hpp>
 Customer::Customer(int id, const string& name, const string& username, const string& pin) 
 	: id(id), name(name), username(username), pin(pin) {}
+
+Customer::Customer() : transactionHead(nullptr) {}
+
+Customer::~Customer() {
+	Transaction* current = transactionHead;
+	while (current) {
+		Transaction* toDelete = current;
+		current = current->next;
+		delete toDelete;
+	}
+}
 
 int Customer::getId() const {
 	return id;
@@ -45,4 +58,79 @@ void Customer::generateTransactionReceipt(const string& transaction) {
 	catch (const ios_base::failure& e) {
 		cerr << "Unexpected error occurred: " << e.what() << endl;
 	}
+}
+
+void Customer::addTransaction(const string& type, double amount, const string& timestamp) {
+	Transaction* newTransaction = new Transaction(type, amount, timestamp);
+	newTransaction->next = transactionHead;
+	transactionHead = newTransaction;
+
+	undoStack.push(newTransaction);
+}
+
+void Customer::undoTransaction() {
+	if (undoStack.empty()) {
+		cout << "No transactions to undo." << endl;
+		return;
+	}
+
+	Transaction* lastTransaction = undoStack.top();
+	undoStack.pop();
+
+	// Remove the transaction from the linked list
+	if (transactionHead == lastTransaction) {
+		transactionHead = transactionHead->next;
+	}
+	else {
+		Transaction* current = transactionHead;
+		while (current && current->next != lastTransaction) {
+			current = current->next;
+		}
+		if (current) {
+
+			current->next = lastTransaction->next;
+		}
+	}
+	delete lastTransaction;
+}
+
+void Customer::displayTransactionHistory() {
+
+	using namespace ftxui;
+	system("cls");
+	Elements elements;
+	Transaction* current = transactionHead;
+	while (current) {
+		elements.push_back(text(current->type + ": $" + to_string(current->amount) + " on " + current->timestamp));
+		current = current->next;
+	}
+
+	// If no transactions, show a placeholder message
+	if (elements.empty()) {
+		elements.push_back(text("No transactions available.") | dim | center);
+	}
+
+	auto transactionList = vbox(move(elements)) | border | vscroll_indicator | frame;
+	auto screen = ScreenInteractive::TerminalOutput();
+	
+	// Back button to cancel the operation.
+	auto backButton = Button("Cancel", [] {
+		ScreenInteractive::Active()->Exit();
+		});
+
+	auto layout = Container::Vertical({
+		Renderer([&] { return transactionList; }),
+		backButton
+		});
+	auto component = Renderer(layout, [&] {
+		return vbox({
+			text("Transaction History") | bold | center,
+			separator(),
+			transactionList,
+			separator(),
+			backButton->Render() | hcenter,
+		});
+	});
+	
+	screen.Loop(component);
 }
