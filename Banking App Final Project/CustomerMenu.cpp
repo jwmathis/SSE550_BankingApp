@@ -280,6 +280,8 @@ void customerMenu(Customer* customer, Bank& bank) {
 		"5. Transfer Funds",
 		"6. Close Account",
 		"7. Display Transaction History",
+		"8. Undo Last Transaction",
+		"9. Submit Help Request",
 	};
 
 	bool whileFlag = true;
@@ -843,6 +845,144 @@ void customerMenu(Customer* customer, Bank& bank) {
 			break;
 		}
 
+		case 8: {
+			// Submit request to undo transaction
+			system("cls");
+			auto screen = ScreenInteractive::TerminalOutput();
+			string confirmationMessage = "Would you like to undo the last transaction?";
+			string statusMessage = "";
+			bool confirmed = false;
+
+			auto confirmButton = Button("Submit", [&] {
+				customer->undoTransaction();
+				statusMessage = "Your request has been sent. It will be processed in the next few days.";
+				confirmed = true;
+				});
+
+			auto cancelButton = Button("Cancel", [&] { screen.Exit(); });
+			auto layout = Container::Vertical({
+				confirmButton,
+				cancelButton,
+				});
+
+			auto renderer = Renderer(layout, [&] {
+				return vbox({
+					text(confirmationMessage) | bold | center,
+					separator(),
+					hbox({
+						confirmButton->Render() | center,
+						cancelButton->Render() | center,
+						}),
+					separator(),
+					statusMessage.empty() ? text("") : text(statusMessage) | color(Color::Green),
+					});
+				});
+			screen.Loop(renderer);
+			break;
+		}
+
+		case 9: {
+			system("cls");
+			auto screen = ScreenInteractive::TerminalOutput();
+			std::string helpRequest = "";
+			std::string statusMessage = "";
+			int selectedIndex = 0; // Index for selecting requests to delete
+
+			// Fetch help requests from the customer
+			auto fetchHelpRequests = [&]() -> std::vector<std::string> {
+				std::vector<std::string> requests;
+				std::queue<std::string> tempQueue = customer->getHelpRequests();
+				while (!tempQueue.empty()) {
+					requests.push_back(tempQueue.front());
+					tempQueue.pop();
+				}
+				return requests;
+				};
+
+			auto helpRequests = fetchHelpRequests();
+
+			// Input for submitting new help requests
+			auto submitRequestInput = Input(&helpRequest, "Enter your help request: ");
+
+			// Buttons
+			auto submitRequestButton = Button("Submit Request", [&] {
+				if (!helpRequest.empty()) {
+					customer->addHelpRequest(helpRequest);
+					statusMessage = "Your request has been submitted.";
+					helpRequest = ""; // Clear input
+					helpRequests = fetchHelpRequests(); // Refresh the request list
+				}
+				else {
+					statusMessage = "Error: Request cannot be empty.";
+				}
+				});
+
+			auto deleteRequestButton = Button("Delete Selected Request", [&] {
+				if (!helpRequests.empty() && selectedIndex >= 0 && selectedIndex < helpRequests.size()) {
+					customer->removeHelpRequest();
+					statusMessage = "Request deleted successfully.";
+					helpRequests = fetchHelpRequests(); // Refresh the request list
+					selectedIndex = 0; // Reset selection
+				}
+				else {
+					statusMessage = "Error: No request selected or invalid selection.";
+				}
+				});
+
+			auto exitButton = Button("Exit", [&] { screen.Exit(); });
+
+			// Layout and rendering
+			auto layout = Container::Vertical({
+				submitRequestInput,
+				submitRequestButton,
+
+				Renderer([&] {
+					std::vector<Element> requestElements;
+					for (size_t i = 0; i < helpRequests.size(); ++i) {
+						bool isSelected = (i == selectedIndex);
+						auto style = isSelected ? bgcolor(Color::Blue) | color(Color::White) : nothing;
+						requestElements.push_back(text(helpRequests[i]) | style);
+					}
+					return vbox(requestElements) | frame | vscroll_indicator | size(HEIGHT, LESS_THAN, 10);
+				}),
+
+				Button("Select Next", [&] {
+					if (!helpRequests.empty()) {
+						selectedIndex = (selectedIndex + 1) % helpRequests.size();
+					}
+				}),
+				Button("Select Previous", [&] {
+					if (!helpRequests.empty()) {
+						selectedIndex = (selectedIndex - 1 + helpRequests.size()) % helpRequests.size();
+					}
+				}),
+
+				deleteRequestButton,
+				exitButton,
+				});
+
+			auto renderer = Renderer(layout, [&] {
+				return vbox({
+					text("Help Request System") | bold | center,
+					separator(),
+					vbox({
+						text("Submit a new help request:"),
+						submitRequestInput->Render(),
+						submitRequestButton->Render() | hcenter,
+						separator(),
+						text("Select a request to delete:"),
+						layout->Render(),
+						separator(),
+						statusMessage.empty() ? text("") : text(statusMessage) | color(Color::Green),
+						exitButton->Render() | hcenter,
+					}) | border
+					});
+				});
+
+			screen.Loop(renderer);
+			break;
+		}
+
 		default: {
 			system("cls");
 			auto screen = ScreenInteractive::TerminalOutput();
@@ -890,7 +1030,6 @@ void customerMenu(Customer* customer, Bank& bank) {
 			system("pause");
 			break;
 		}
-
 		}
 	}
 }

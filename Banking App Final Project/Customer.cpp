@@ -94,6 +94,31 @@ void Customer::undoTransaction() {
 	delete lastTransaction;
 }
 
+void Customer::addHelpRequest(const string& request) {
+	helpRequestQueue.push(request);
+}
+
+bool Customer::removeHelpRequest() { 
+	if (helpRequestQueue.empty()) {
+		return false;
+	}
+	helpRequestQueue.pop();
+	return true;
+}
+queue<std::string> Customer::getHelpRequests() {
+
+	queue<std::string> tempQueue = helpRequestQueue;
+
+	if (tempQueue.empty()) {
+		return tempQueue;;
+	}
+	else {
+		return tempQueue;
+	}
+
+	
+}
+
 void Customer::displayTransactionHistory() {
 
 	using namespace ftxui;

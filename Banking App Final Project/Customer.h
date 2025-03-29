@@ -4,7 +4,7 @@
 #include "Account.h"
 #include "sqlite3.h"
 #include <stack>
-
+#include <queue>
 using namespace std;
 
 class Customer {
@@ -25,6 +25,8 @@ private:
 
 	Transaction* transactionHead; // Header of the linked list
 	stack<Transaction*> undoStack; // Stack for undoing transactions
+	queue<string> helpRequestQueue; // Queue for help requests
+
 public:
 	Customer();
 	Customer(int id, const string& name, const string& username, const string& pin);
@@ -43,5 +45,8 @@ public:
 	// Transaction methods
 	void addTransaction(const string& type, double amount, const string& timestamp);
 	void undoTransaction();
+	void addHelpRequest(const string& request);
+	bool removeHelpRequest();
+	queue<std::string> getHelpRequests();
 	void displayTransactionHistory(); // To integrate with FTXUI
 };
