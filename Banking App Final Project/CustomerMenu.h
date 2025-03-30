@@ -7,7 +7,8 @@
 enum MainMenuOption {
 	REGISTER = 1,
 	LOGIN,
-	EXIT
+	EXIT,
+	ADMIN
 };
 
 enum CustomerMenuOption {

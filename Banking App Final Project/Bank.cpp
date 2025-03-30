@@ -3,6 +3,8 @@
 #include <cstdlib>
 #include <iostream>
 
+
+
 Bank::Bank(const string& dbName) {
 	if (sqlite3_open(dbName.c_str(), &db) != SQLITE_OK) {
 		cerr << "Error opening database: " << sqlite3_errmsg(db) << endl;
@@ -241,4 +243,30 @@ bool Bank::accountRemoveAccount(const string& accountNumber) {
 		return false;
 	}
 	return true;
+}
+
+vector <Bank::acc> Bank::fetchAccountsFromDatabase() {
+
+	vector<acc> accounts;
+	const char* sql = "SELECT account_id, user_id, account_number, balance, account_type FROM accounts";
+	sqlite3_stmt* stmt;
+
+	if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK) {
+		cerr << "Failed to prepare statement: " << sqlite3_errmsg(db) << endl;
+		return accounts;
+	}
+
+	while (sqlite3_step(stmt) == SQLITE_ROW) {
+		acc acc;
+		acc.accountId = sqlite3_column_int(stmt, 0);
+		acc.userId = sqlite3_column_int(stmt, 1);
+		acc.accountNumber = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
+		acc.balance = sqlite3_column_double(stmt, 3);
+		acc.accountType = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 4));
+		accounts.push_back(acc);
+	}
+
+	sqlite3_finalize(stmt);
+
+	return accounts;
 }

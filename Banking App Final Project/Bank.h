@@ -17,6 +17,14 @@ private:
 	int getUserId(const string& username);
 	int accountNumberCounter = 100000;
 public:
+	struct acc {
+		int accountId;
+		int userId;
+		string accountNumber;
+		double balance;
+		string accountType;
+	};
+
 	Bank(const string& dbName); // Constructor to open database
 	~Bank(); // Destructor to close database
 
@@ -32,5 +40,6 @@ public:
 	bool accountRemoveAccount(const string& accountNumber);
 	int generateAccountNumber(const int accountType);
 	bool accountNumberExists(const string& accountNumber);
+	vector <acc> fetchAccountsFromDatabase();
 };
 
