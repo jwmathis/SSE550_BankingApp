@@ -18,13 +18,55 @@
 #include <ftxui/dom/elements.hpp>
 #include <memory>
 #include "Bank.h"
-
+#include "Admin.h"
 
 using namespace std;
 using namespace ftxui;
 
+void merge (vector<Bank::acc>& accounts, int low, int mid, int high) { // Merge Sort
+	vector<Bank::acc> temp(high - low + 1);
 
-int findLowerBound(const vector<Bank::acc>& accounts, double minBalance) {
+	int i = low, j = mid + 1, k = 0;
+
+	while (i <= mid && j <= high) {
+		if (accounts[i].balance < accounts[j].balance) {
+			temp[k++] = accounts[i++];
+		}
+		else {
+			temp[k++] = accounts[j++];
+		}
+	}
+
+	while (i <= mid) {
+		temp[k++] = accounts[i++];
+	}
+
+	while (j <= high) {
+		temp[k++] = accounts[j++];
+	}
+
+	for (int i = low; i <= temp.size(); i++) {
+		accounts[low + i] = temp[i];
+	}
+}
+
+void merge_recurse(vector<Bank::acc>& accounts, int low, int high) {
+	if (low >= high) {
+		return;
+	}
+	
+	int mid = (low + high) / 2;
+	merge_recurse(accounts, low, mid);
+	merge_recurse(accounts, mid + 1, high);
+	merge(accounts, low, mid, high);
+	
+}
+
+void mergeSort(vector<Bank::acc>& accounts, int length) {
+	merge_recurse(accounts, 0, length - 1);
+}
+
+int findLowerBound(const vector<Bank::acc>& accounts, double minBalance) { // Binary Search: Returns the index of the first account with a balance greater than or equal to minBalance
 	int low = 0, high = accounts.size() - 1;
 	while (low < high) {
 		int mid = low + (high - low) / 2;
@@ -44,6 +86,7 @@ vector<Bank::acc> getAccountsInBalanceRange(vector<Bank::acc>& accounts, double 
 	std::sort(accounts.begin(), accounts.end(), [](const Bank::acc& a, const Bank::acc& b) {
 		return a.balance < b.balance; // Compare based on balance
 		});
+	//mergeSort(accounts, accounts.size());
 
 	int startIdx = findLowerBound(accounts, minBalance);
 	if (startIdx == -1) return {};
@@ -164,7 +207,7 @@ int main() {
 			string loginMessage = "Please enter your admin credentials:";
 
 			auto usernameInput = Input(&username, "Username (admin): ");
-			auto passwordInput = Input(&password, "Password: ");
+			auto passwordInput = Input(&password, "Password (admin): ");
 
 			auto submitButton = Button("Login", [&] {
 				if (username.empty() || password.empty()) {
@@ -213,8 +256,10 @@ int main() {
 
 				auto adminMenuEntries = vector<string>{
 					"1. View All Accounts",
-					"2. Search for Specific Account",
-					"3. Exit"
+					"2. Search for Accounts By Balance Range",
+					"3. Search for Accounts By Name",
+					"4. Dummy Account",
+					"5. Exit"
 				};
 
 				int selectedAdminMenuEntry = 0;
@@ -335,6 +380,42 @@ int main() {
 					break;
 				}
 				case 3: {
+					system("cls");
+					vector<Bank::acc> accounts = MercerBank.fetchAccountsFromDatabase();
+					AccountBST bst;
+					bst.buildTree(accounts);
+
+					// Display all
+					//bst.displayAllAccounts();
+
+					string inputAccNumber;
+					cout << "Enter the account number to find: ";
+					cin >> inputAccNumber;
+					Bank::acc* result = bst.searchAccount(inputAccNumber);
+					if (result) {
+						cout << "Account found:\n";
+						bst.printAccount(*result);
+					}
+					else {
+						cout << "Account not found.\n";
+					}
+					system("pause");
+					system("cls");
+					break;
+				}
+
+				case 4: {
+
+					string name = "dummy_account";
+					string username = "username";
+					string pin = "1234";
+					MercerBank.registerCustomer(name, username, pin);
+					Customer* customer = MercerBank.login(username, pin);
+					customerMenu<double>(customer, MercerBank);
+					break;
+				}
+
+				case 5: {
 					flag = false;
 					break;
 				}
@@ -347,42 +428,10 @@ int main() {
 		}
 
 		default:
-			cout << "Enter your choice: " << endl;
-			cin >> selectedMenuEntry;
-			switch (selectedMenuEntry) {
-			case REGISTER:
-				system("cls");
-				registerCustomer(MercerBank);
-				break;
-
-			case LOGIN: {
-				if (!loginCustomer(MercerBank)) {
-					cout << "Would you like to register (Y/N)?" << endl;
-					cin >> option;
-					userInput = strcmp(option, "Y");
-					if (!userInput) {
-						registerCustomer(MercerBank);
-					}
-				}
-				break;
-			}
-			case EXIT: {
-				cout << "Thanks for banking with us!" << endl;
-				return 0;
-			}
-
-			case 5: {
-				string name = "dummy_account";
-				string username = "username";
-				string pin = "1234";
-				MercerBank.registerCustomer(name, username, pin);
-				Customer* customer = MercerBank.login(username, pin);
-				customerMenu<double>(customer, MercerBank);
-				break;
-			}
-			}
-
+			cout << "Thanks for banking with us!" << endl;
 			return 0;
+
+		return 0;
 		}
 	}
 }

@@ -137,16 +137,16 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Bank.cpp" />
+    <ClCompile Include="CustomerMenu.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Customer.cpp" />
-    <ClCompile Include="CustomerMenu.cpp" />
     <ClCompile Include="sqlite3.c" />
     <ClCompile Include="SQLiteFunctions.cpp" />
-    <ClCompile Include="Transfer.cpp" />
     <ClCompile Include="UIHelpers.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Account.h" />
+    <ClInclude Include="Admin.h" />
     <ClInclude Include="Bank.h" />
     <ClInclude Include="Customer.h" />
     <ClInclude Include="CustomerMenu.h" />

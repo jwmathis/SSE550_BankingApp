@@ -80,6 +80,9 @@
     <ClInclude Include="SavingsAccount.h">
       <Filter>Header Files\Class Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Admin.h">
+      <Filter>Header Files\Class Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Banking App Final Project.rc">

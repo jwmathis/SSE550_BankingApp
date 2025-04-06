@@ -1,2 +1,0 @@
-Transaction: Deposit successful! New balance: $511.000000
-------------------------------------------
