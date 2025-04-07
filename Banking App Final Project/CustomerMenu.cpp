@@ -13,41 +13,48 @@
 using namespace ftxui;
 
 // Bank function declarations
-template <typename T>
-void displayCustomerAccountsMenu(Bank& bank, Customer* customer) {
-	auto screen = ScreenInteractive::TerminalOutput();
 
-	auto displayAccounts = bank.getAccountsForCustomer<T>(customer->getId());
-	vector<Component> accountComponents;
-	int countNumOfAccounts = 0;
-	for (const auto& account : displayAccounts) {
+// Function to display customer accounts menu
+template <typename T> 
+void displayCustomerAccountsMenu(Bank& bank, Customer* customer) {
+	auto screen = ScreenInteractive::TerminalOutput(); // FTXUI: Initialize the screen
+
+	auto displayAccounts = bank.getAccountsForCustomer<T>(customer->getId()); // Retrieve accounts for the customer
+	vector<Component> accountComponents; // FTXUI: Vector to hold account components
+	int countNumOfAccounts = 0; // FTXUI: Counter for number of accounts
+	for (const auto& account : displayAccounts) { // Loop through each account
 		countNumOfAccounts++;
 		string accountType;
 
-		if (dynamic_cast<SavingsAccount<T>*>(account)) {
+		if (dynamic_cast<SavingsAccount<T>*>(account)) { // Check if the account is a SavingsAccount
 			accountType = "Savings";
 		}
-		else {
+		else { // Otherwise, it's a Regular account
 			accountType = "Regular";
 		}
 
+		// Create a text string with account information
 		string accountInfo = to_string(countNumOfAccounts) +
 			". Account Type: " + accountType +
 			", Account Number: " + account->getAccountNum() +
 			", Balance: $" + to_string(account->getBalance());
 
+		// Create a renderer for the account information
 		accountComponents.push_back(Renderer([=] {
 			return text(accountInfo);
 			}));
 	}
 
+	// Create a button to go back to the main menu
 	auto backButton = Button("Back", [&] {
 		screen.Exit();
 		});
 
+	// Create a renderer for the back button
 	auto layout = Container::Vertical(accountComponents);
 	layout->Add(backButton);
 
+	// Create a renderer for the entire menu
 	auto renderer = Renderer(layout, [&] {
 		vector<Element> accountElements;
 		for (const auto& account : accountComponents) {
@@ -63,209 +70,294 @@ void displayCustomerAccountsMenu(Bank& bank, Customer* customer) {
 			}) | border;
 		});
 
-	screen.Loop(renderer);
+	screen.Loop(renderer); // FTXUI: Loop to display the screen until the user clicks back
 }
 
+// Function to register a new customer
 void registerCustomer(Bank& bank) {
-	auto screen = ScreenInteractive::TerminalOutput();
+  // FTXUI: Initialize the screen
+  auto screen = ScreenInteractive::TerminalOutput();
 
-	string name, username, pin;
-	string error_message = "";
+  // Variables to store customer details
+  string name, username, pin;
 
-	auto nameInput = Input(&name, "Full Legal Name: ");
-	auto usernameInput = Input(&username, "Username: ");
-	auto pinInput = Input(&pin, "PIN: ");
+  // FTXUI: Error message variable
+  string error_message = "";
 
-	auto submitButton = Button("Register", [&] {
-		if (pin.length() != 4 || !all_of(pin.begin(), pin.end(), ::isdigit)) {
-			error_message = "Error: PIN must be exactly 4 digits.";
-			return;
-		}
+  // FTXUI: Input for full legal name
+  auto nameInput = Input(&name, "Full Legal Name: ");
 
-		if (bank.registerCustomer(name, username, pin)) {
-			Customer* customer = bank.login(username, pin);
-			if (customer) {
-				screen.Exit();
-				text("You've been registered " + customer->getName() + "! Thanks for signing up!");
-				newCustomer(customer, bank); //New registered customers will go straight to Option 1 to open an account
-				screen.Exit(); // Exit the registration screen
-			}
-		}
-		else {
-			error_message = "Error: Failed to register user. Username already exists.";
-		}
+  // FTXUI: Input for username
+  auto usernameInput = Input(&username, "Username: ");
 
-		});
+  // FTXUI: Input for PIN
+  auto pinInput = Input(&pin, "PIN: ");
 
-	auto exitButton = Button("Cancel", [&] { screen.Exit(); });
+  // FTXUI: Submit button action
+  auto submitButton = Button("Register", [&] {
+    // Check if PIN is exactly 4 digits
+    if (pin.length() != 4 || !all_of(pin.begin(), pin.end(), ::isdigit)) {
+      // Display error message if PIN is invalid
+      error_message = "Error: PIN must be exactly 4 digits.";
+      return;
+    }
 
-	auto layout = Container::Vertical({
-		nameInput,
-		usernameInput,
-		pinInput,
-		Container::Horizontal({
-			submitButton,
-			exitButton
-			}),
-		});
+    // Attempt to register the customer with the provided details
+    if (bank.registerCustomer(name, username, pin)) {
+      // If registration is successful, log the customer in and create a new account
+      Customer* customer = bank.login(username, pin);
+      if (customer) {
+        // Exit the registration screen
+        screen.Exit();
+        // Display success message
+        text("You've been registered " + customer->getName() + "! Thanks for signing up!");
+        // Create a new account for the registered customer
+        newCustomer(customer, bank);
+        // Exit the registration screen again (not sure why this is needed)
+        screen.Exit();
+      }
+    } else {
+      // Display error message if registration fails
+      error_message = "Error: Failed to register user. Username already exists.";
+    }
+  });
 
-	auto renderer = Renderer(layout, [&] {
-		return vbox({
-			text("Register New Account") | bold | center,
-			separator(),
-			text("Enter your details below:"),
-			nameInput->Render(),
-			usernameInput->Render(),
-			pinInput->Render(),
-			hbox({
-				submitButton->Render() | center,
-				exitButton->Render() | center,
-				}),
-			error_message.empty() ? text("") : text(error_message) | color(Color::Red),
-			}) | border;
-		});
+  // FTXUI: Cancel button action
+  auto exitButton = Button("Cancel", [&] { screen.Exit(); });
 
-	screen.Loop(renderer);
-	system("cls");
+  // FTXUI: Layout for the registration form
+  auto layout = Container::Vertical({
+    nameInput,
+    usernameInput,
+    pinInput,
+    Container::Horizontal({
+      submitButton,
+      exitButton
+    }),
+  });
+
+  // FTXUI: Renderer for the registration form
+  auto renderer = Renderer(layout, [&] {
+    return vbox({
+      // Display registration form title
+      text("Register New Account") | bold | center,
+      // Display separator
+      separator(),
+      // Display input prompt
+      text("Enter your details below:"),
+      // Display input fields
+      nameInput->Render(),
+      usernameInput->Render(),
+      pinInput->Render(),
+      // Display submit and cancel buttons
+      hbox({
+        submitButton->Render() | center,
+        exitButton->Render() | center,
+      }),
+      // Display error message if any
+      error_message.empty() ? text("") : text(error_message) | color(Color::Red),
+    }) | border;
+  });
+
+  // FTXUI: Loop to display the screen until the user clicks submit or cancel
+  screen.Loop(renderer);
+  // Clear the console
+  system("cls");
 }
 
-//New registered customers will go straight to Option 1 to open an account
+//	Function to create a new customer account
+/**
+ * Creates a new customer account.
+ *
+ * @param customer The customer object to create an account for.
+ * @param bank The bank object to interact with.
+ */
 void newCustomer(Customer* customer, Bank& bank) {
-	system("cls");
-	auto screen = ScreenInteractive::TerminalOutput();
+  // Clear the console
+  system("cls");
 
-	string initialBalanceString;
-	double initialBalance;
-	bool conversion_error = false;
-	string error_message = "";
-	vector<string> accountType = { "Regular", "Savings" };
-	int selectedAccountType = 0;
+  // Initialize the screen for user interaction
+  auto screen = ScreenInteractive::TerminalOutput();
 
-	auto initialBalanceInput = Input(&initialBalanceString, "Initial Balance: ");
-	auto accountTypeRadiobox = Radiobox(&accountType, &selectedAccountType);
+  // Variables for user input
+  string initialBalanceString; // Input variable for initial balance
+  double initialBalance; // Double variable for initial balance
+  bool conversion_error = false; // Flag for conversion error
+  string error_message = ""; // Error message variable
 
-	auto submitButton = Button("Submit", [&] {
-		try {
-			initialBalance = stod(initialBalanceString);
-			if (initialBalance < 0) {
-				error_message = "Invalid input. Your account cannot be created with a negative balance. "
-					"Please enter a positive balance or 0 to create your account.\n";
-				return;
-			}
-		}
-		catch (const std::invalid_argument&) {
-			error_message = "Invalid input. Please enter a valid number.\n";
-			return;
-		}
-		catch (const std::out_of_range&) {
-			error_message = "Invalid input. Please enter a smaller number.\n";
-			return;
-		}
-		string selectedType = accountType[selectedAccountType];
-		int accountNumber = bank.generateAccountNumber(1);
-		if (bank.addAccountForCustomer(customer->getId(), to_string(accountNumber), initialBalance, selectedType)) {
-			text("Your Account has been created! Your account number is: " + to_string(accountNumber));
-			system("pause");
-			screen.Exit();
-		}
-		else {
-			error_message = "Error: Failed to create account. Please try again.";
-		}
-		});
+  // Account type options
+  vector<string> accountType = { "Regular", "Savings" };
+  int selectedAccountType = 0; // Default account type selection
 
-	auto exitButton = Button("Cancel", [&] { screen.Exit(); });
+  // Create input field for initial balance
+  auto initialBalanceInput = Input(&initialBalanceString, "Initial Balance: ");
 
-	auto layout = Container::Vertical({
-		initialBalanceInput,
-		accountTypeRadiobox,
-		Container::Horizontal({
-			submitButton,
-			exitButton
-			}),
-		});
+  // Create radio box for account type selection
+  auto accountTypeRadiobox = Radiobox(&accountType, &selectedAccountType);
 
-	auto renderer = Renderer(layout, [&] {
-		return vbox({
-			text("Open New Account") | bold | center,
-			separator(),
-			text("Enter the inital balance for your new account below:"),
-			initialBalanceInput->Render(),
-			accountTypeRadiobox->Render(),
-			hbox({
-				submitButton->Render() | center,
-				exitButton->Render() | center,
-				}),
-			error_message.empty() ? text("") : text(error_message) | color(Color::Red),
-			}) | border;
-		});
+  // Create submit button to create the account
+  auto submitButton = Button("Submit", [&] {
+    try {
+      // Attempt to convert initial balance string to double
+      initialBalance = stod(initialBalanceString);
 
-	screen.Loop(renderer);
-	system("cls");
+      // Check if initial balance is negative
+      if (initialBalance < 0) {
+        // Display error message
+        error_message = "Invalid input. Your account cannot be created with a negative balance. "
+          "Please enter a positive balance or 0 to create your account.\n";
+        return;
+      }
+    } catch (const std::invalid_argument&) {
+      // Display error message if input is not a valid number
+      error_message = "Invalid input. Please enter a valid number.\n";
+      return;
+    } catch (const std::out_of_range&) {
+      // Display error message if input is too large
+      error_message = "Invalid input. Please enter a smaller number.\n";
+      return;
+    }
+
+    // Get selected account type
+    string selectedType = accountType[selectedAccountType];
+
+    // Generate a new account number
+    int accountNumber = bank.generateAccountNumber(1);
+
+    // Attempt to add the account to the customer
+    if (bank.addAccountForCustomer(customer->getId(), to_string(accountNumber), initialBalance, selectedType)) {
+      // Display success message and account number
+      text("Your Account has been created! Your account number is: " + to_string(accountNumber));
+      system("pause");
+      screen.Exit();
+    } else {
+      // Display error message if account creation fails
+      error_message = "Error: Failed to create account. Please try again.";
+    }
+  });
+
+  // Create cancel button to exit the screen
+  auto exitButton = Button("Cancel", [&] { screen.Exit(); });
+
+  // Create layout for the screen
+  auto layout = Container::Vertical({
+    initialBalanceInput,
+    accountTypeRadiobox,
+    Container::Horizontal({
+      submitButton,
+      exitButton
+    }),
+  });
+
+  // Create renderer for the screen
+  auto renderer = Renderer(layout, [&] {
+    return vbox({
+      text("Open New Account") | bold | center,
+      separator(),
+      text("Enter the initial balance for your new account below:"),
+      initialBalanceInput->Render(),
+      accountTypeRadiobox->Render(),
+      hbox({
+        submitButton->Render() | center,
+        exitButton->Render() | center,
+      }),
+      error_message.empty() ? text("") : text(error_message) | color(Color::Red),
+    }) | border;
+  });
+
+  // Loop the screen until the user exits
+  screen.Loop(renderer);
+
+  // Clear the console
+  system("cls");
 }
 
+/**
+ * Attempts to log in a customer to the banking system.
+ *
+ * @param bank The bank object to interact with.
+ * @return True if the login is successful, false otherwise.
+ */
 bool loginCustomer(Bank& bank) {
-	auto screen = ScreenInteractive::TerminalOutput();
+  // Initialize the screen for user interaction
+  auto screen = ScreenInteractive::TerminalOutput();
 
-	string username, pin;
-	bool loginStatus = false;
-	string error_message = "";
-	Customer* customer = nullptr;
+  // Variables for user input
+  string username, pin;
+  bool loginStatus = false; // Flag to track login status
+  string error_message = ""; // Error message variable
+  Customer* customer = nullptr; // Customer object to store logged-in customer
 
-	auto usernameInput = Input(&username, "Username: ");
-	auto pinInput = Input(&pin, "PIN: ");
+  // Create input fields for username and PIN
+  auto usernameInput = Input(&username, "Username: ");
+  auto pinInput = Input(&pin, "PIN: ");
 
-	auto submitButton = Button("Login", [&] {
-		if (username.empty() || pin.empty()) {
-			error_message = "Error: Please enter both username and PIN.";
-			return;
-		}
+  // Create submit button to attempt login
+  auto submitButton = Button("Login", [&] {
+    // Check if both username and PIN are entered
+    if (username.empty() || pin.empty()) {
+      // Display error message
+      error_message = "Error: Please enter both username and PIN.";
+      return;
+    }
 
-		customer = bank.login(username, pin);
-		if (!customer) {
-			error_message = "Login failed. Invalid username or PIN.";
-			loginStatus = false;
-			return;
-		}
-		else {
-			loginStatus = true;
-			screen.Exit();
-		}
-		});
-	auto exitButton = Button("Cancel", [&] { loginStatus = false; screen.Exit(); });
+    // Attempt to log in the customer
+    customer = bank.login(username, pin);
+    if (!customer) {
+      // Display error message if login fails
+      error_message = "Login failed. Invalid username or PIN.";
+      loginStatus = false;
+      return;
+    } else {
+      // Set login status to true and exit the screen
+      loginStatus = true;
+      screen.Exit();
+    }
+  });
 
-	auto layout = Container::Vertical({
-		usernameInput,
-		pinInput,
-		Container::Horizontal({
-			submitButton,
-			exitButton
-			}),
-		});
+  // Create cancel button to exit the screen
+  auto exitButton = Button("Cancel", [&] { loginStatus = false; screen.Exit(); });
 
-	auto renderer = Renderer(layout, [&] {
-		return vbox({
-			text("Customer Login") | bold | center,
-			separator(),
-			text("Enter your username and PIN below:"),
-			usernameInput->Render(),
-			pinInput->Render(),
-			hbox({
-				submitButton->Render() | center,
-				exitButton->Render() | center,
-			}),
-			error_message.empty() ? text("") : text(error_message) | color(Color::Red),
-			})
-			| border;
-		});
+  // Create layout for the screen
+  auto layout = Container::Vertical({
+    usernameInput,
+    pinInput,
+    Container::Horizontal({
+      submitButton,
+      exitButton
+    }),
+  });
 
-	screen.Loop(renderer);
-	system("cls");
+  // Create renderer for the screen
+  auto renderer = Renderer(layout, [&] {
+    return vbox({
+      text("Customer Login") | bold | center,
+      separator(),
+      text("Enter your username and PIN below:"),
+      usernameInput->Render(),
+      pinInput->Render(),
+      hbox({
+        submitButton->Render() | center,
+        exitButton->Render() | center,
+      }),
+      error_message.empty() ? text("") : text(error_message) | color(Color::Red),
+    })
+    | border;
+  });
 
-	if (loginStatus) {
-		customerMenu<double>(customer, bank);
-	}
+  // Loop the screen until the user exits
+  screen.Loop(renderer);
 
-	return loginStatus; // Login successful
+  // Clear the console
+  system("cls");
+
+  // If login is successful, display the customer menu
+  if (loginStatus) {
+    customerMenu<double>(customer, bank);
+  }
+
+  // Return the login status
+  return loginStatus; // Login successful
 }
 
 template <typename T>
