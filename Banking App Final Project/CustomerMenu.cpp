@@ -1023,32 +1023,37 @@ void customerMenu(Customer* customer, Bank& bank) {
 
 			auto exitButton = Button("Exit", [&] { screen.Exit(); });
 
-			// Layout and rendering
+			// Request List Renderer
+			auto requestListRenderer = Renderer([&] {
+				std::vector<Element> requestElements;
+				for (size_t i = 0; i < helpRequests.size(); ++i) {
+					bool isSelected = (i == selectedIndex);
+					auto style = isSelected ? bgcolor(Color::Blue) | color(Color::White) : nothing;
+					requestElements.push_back(text(helpRequests[i]) | style);
+				}
+				return vbox(requestElements) | frame | vscroll_indicator | size(HEIGHT, LESS_THAN, 10);
+				});
+
+			// Navigation Buttons
+			auto selectNextButton = Button("Select Next", [&] {
+				if (!helpRequests.empty()) {
+					selectedIndex = (selectedIndex + 1) % helpRequests.size();
+				}
+				});
+
+			auto selectPreviousButton = Button("Select Previous", [&] {
+				if (!helpRequests.empty()) {
+					selectedIndex = (selectedIndex - 1 + helpRequests.size()) % helpRequests.size();
+				}
+				});
+
+			// Layout
 			auto layout = Container::Vertical({
 				submitRequestInput,
 				submitRequestButton,
-
-				Renderer([&] {
-					std::vector<Element> requestElements;
-					for (size_t i = 0; i < helpRequests.size(); ++i) {
-						bool isSelected = (i == selectedIndex);
-						auto style = isSelected ? bgcolor(Color::Blue) | color(Color::White) : nothing;
-						requestElements.push_back(text(helpRequests[i]) | style);
-					}
-					return vbox(requestElements) | frame | vscroll_indicator | size(HEIGHT, LESS_THAN, 10);
-				}),
-
-				Button("Select Next", [&] {
-					if (!helpRequests.empty()) {
-						selectedIndex = (selectedIndex + 1) % helpRequests.size();
-					}
-				}),
-				Button("Select Previous", [&] {
-					if (!helpRequests.empty()) {
-						selectedIndex = (selectedIndex - 1 + helpRequests.size()) % helpRequests.size();
-					}
-				}),
-
+				requestListRenderer,
+				selectNextButton,
+				selectPreviousButton,
 				deleteRequestButton,
 				exitButton,
 				});
@@ -1057,18 +1062,23 @@ void customerMenu(Customer* customer, Bank& bank) {
 				return vbox({
 					text("Help Request System") | bold | center,
 					separator(),
-					vbox({
-						text("Submit a new help request:"),
+					text("Submit a new help request:"),
+					hbox({
 						submitRequestInput->Render(),
 						submitRequestButton->Render() | hcenter,
-						separator(),
-						text("Select a request to delete:"),
-						layout->Render(),
-						separator(),
-						statusMessage.empty() ? text("") : text(statusMessage) | color(Color::Green),
-						exitButton->Render() | hcenter,
-					}) | border
-					});
+					}),
+					separator(),
+					text("Select a request to delete:"),
+					requestListRenderer->Render(),
+					hbox({
+						selectPreviousButton->Render(),
+						selectNextButton->Render(),
+					}) | center,
+					deleteRequestButton->Render() | hcenter,
+					separator(),
+					statusMessage.empty() ? text("") : text(statusMessage) | color(Color::Green),
+					exitButton->Render() | hcenter,
+					}) | border;
 				});
 
 			screen.Loop(renderer);
