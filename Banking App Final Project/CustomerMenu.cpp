@@ -8,7 +8,7 @@
 #include <ftxui/component/component.hpp> // For button, input, renderer, container, etc
 #include <ftxui/component/screen_interactive.hpp> // For ScreenInteractive
 #include <ftxui/dom/elements.hpp> // For bold, border, text, separator, etc
-
+#include "UIHelpers.h"
 
 using namespace ftxui;
 
@@ -98,7 +98,7 @@ void registerCustomer(Bank& bank) {
     // Check if PIN is exactly 4 digits
     if (pin.length() != 4 || !all_of(pin.begin(), pin.end(), ::isdigit)) {
       // Display error message if PIN is invalid
-      error_message = "Error: PIN must be exactly 4 digits.";
+      error_message = "\xE2\x9D\x8C Error: PIN must be exactly 4 digits.";
       return;
     }
 
@@ -118,7 +118,7 @@ void registerCustomer(Bank& bank) {
       }
     } else {
       // Display error message if registration fails
-      error_message = "Error: Failed to register user. Username already exists.";
+      error_message = "\xE2\x9D\x8C Error: Failed to register user. Username already exists.";
     }
   });
 
@@ -204,17 +204,17 @@ void newCustomer(Customer* customer, Bank& bank) {
       // Check if initial balance is negative
       if (initialBalance < 0) {
         // Display error message
-        error_message = "Invalid input. Your account cannot be created with a negative balance. "
+        error_message = "\xE2\x9D\x8C Invalid input. Your account cannot be created with a negative balance. "
           "Please enter a positive balance or 0 to create your account.\n";
         return;
       }
     } catch (const std::invalid_argument&) {
       // Display error message if input is not a valid number
-      error_message = "Invalid input. Please enter a valid number.\n";
+      error_message = "\xE2\x9D\x8C Invalid input. Please enter a valid number.\n";
       return;
     } catch (const std::out_of_range&) {
       // Display error message if input is too large
-      error_message = "Invalid input. Please enter a smaller number.\n";
+      error_message = "\xE2\x9D\x8C Invalid input. Please enter a smaller number.\n";
       return;
     }
 
@@ -232,7 +232,7 @@ void newCustomer(Customer* customer, Bank& bank) {
       screen.Exit();
     } else {
       // Display error message if account creation fails
-      error_message = "Error: Failed to create account. Please try again.";
+      error_message = "\xE2\x9D\x8C Error: Failed to create account. Please try again.";
     }
   });
 
@@ -297,7 +297,7 @@ bool loginCustomer(Bank& bank) {
     // Check if both username and PIN are entered
     if (username.empty() || pin.empty()) {
       // Display error message
-      error_message = "Error: Please enter both username and PIN.";
+      error_message = "\xE2\x9D\x8C Error: Please enter both username and PIN.";
       return;
     }
 
@@ -305,7 +305,7 @@ bool loginCustomer(Bank& bank) {
     customer = bank.login(username, pin);
     if (!customer) {
       // Display error message if login fails
-      error_message = "Login failed. Invalid username or PIN.";
+      error_message = "\xE2\x9D\x8C Login failed. Invalid username or PIN.";
       loginStatus = false;
       return;
     } else {
@@ -380,7 +380,7 @@ void customerMenu(Customer* customer, Bank& bank) {
 	bool isLoggedOut = false; // Flag for logout
 	int selected = 0;
 	string content = "Select an option";
-	string welcome_customer = "Welcome " + customer->getName() + "!";
+	string welcome_customer = "Welcome " + customer->getName() + "! " + getRandomFruitEmoji();
 
 	auto menuOption = MenuOption();
 	menuOption.on_enter = screen.ExitLoopClosure();
@@ -431,7 +431,7 @@ void customerMenu(Customer* customer, Bank& bank) {
 				logoutMessage = "You've been logged out successfully.";
 			}
 			else {
-				logoutMessage = "Error: Could not remove the transaction receipt file.";
+				logoutMessage = "\xE2\x9D\x8C Error: Could not remove the transaction receipt file.";
 			}
 
 			auto layout = Container::Vertical({
@@ -509,12 +509,12 @@ void customerMenu(Customer* customer, Bank& bank) {
 				try {
 					depositAmount = std::stod(depositAmountString);
 					if (depositAmount <= 0) {
-						error_message = "Error: Deposit amount must be greater than 0.";
+						error_message = "\xE2\x9D\x8C Error: Deposit amount must be greater than 0.";
 						return;
 					}
 				}
 				catch (const std::exception&) {
-					error_message = "Error: Please enter a valid amount.";
+					error_message = "\xE2\x9D\x8C Error: Please enter a valid amount.";
 					return;
 				}
 				string accountNum;
@@ -523,23 +523,23 @@ void customerMenu(Customer* customer, Bank& bank) {
 					accountNum = accountSelected->getAccountNum();
 				}
 				else {
-					error_message = "Error: Account not found.";
+					error_message = "\xE2\x9D\x8C Error: Account not found.";
 				}
 
 				if (accountSelected) {
 					accountSelected->deposit(depositAmount);
 					if (bank.updateAccountBalance(accountSelected->getId(), accountSelected->getBalance())) {
-						success_message = "Deposit successful! New balance: $" + std::to_string(accountSelected->getBalance());
+						success_message = "\xE2\x9C\x85 Deposit successful! New balance: $" + std::to_string(accountSelected->getBalance());
 						customer->addTransaction("Deposit", depositAmount, "9999-99-99");
 						customer->generateTransactionReceipt(success_message);
 						screen.Exit();
 					}
 					else {
-						error_message = "Error: Failed to update account balance.";
+						error_message = "\xE2\x9D\x8C Error: Failed to update account balance.";
 					}
 				}
 				else {
-					error_message = "Error: Account not found.";
+					error_message = "\xE2\x9D\x8C Error: Account not found.";
 				}
 				});
 

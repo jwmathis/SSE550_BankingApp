@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include <thread>
 #include <chrono>
 #include <conio.h>
@@ -188,3 +188,24 @@ void printMU() {
 	cout << RESET;
 }
 
+string getRandomFruitEmoji() {
+	// List of fruit emojis in UTF-8
+	std::vector<std::string> fruitEmojis = {
+		"\xF0\x9F\x8D\x8C", // 🍌 Banana
+		"\xF0\x9F\x8D\x8D", // 🍍 Pineapple
+		"\xF0\x9F\x8D\x8E", // 🍎 Red Apple
+		"\xF0\x9F\x8D\x8F", // 🍏 Green Apple
+		"\xF0\x9F\x8D\x90", // 🍐 Pear
+		"\xF0\x9F\x8D\x91", // 🍑 Peach
+		"\xF0\x9F\x8D\x92", // 🍒 Cherries
+		"\xF0\x9F\x8D\x93", // 🍓 Strawberry
+		"\xF0\x9F\xA5\x91"  // 🥑 Avocado
+	};
+
+	// Generate a random index
+	std::srand(std::time(nullptr)); // Seed for randomness
+	int randomIndex = std::rand() % fruitEmojis.size();
+
+	// Return a random fruit emoji
+	return fruitEmojis[randomIndex];
+}

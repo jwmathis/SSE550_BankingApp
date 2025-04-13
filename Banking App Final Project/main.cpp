@@ -144,6 +144,7 @@ int main() {
 		printMU(); // Print the MU logo
 
 		screen.Loop(Window("Mercer Bank", menu)); // FTXUI: Display the menu
+
 		selectedMenuEntry += 1; // FTXUI: Increment the selected menu entry for switch case selection
 
 		switch (selectedMenuEntry) {
@@ -153,12 +154,13 @@ int main() {
 			break;
 
 		case LOGIN: {
+			clearScreen();
 			if (!loginCustomer(MercerBank)) {
 				auto screen = ScreenInteractive::TerminalOutput(); // FTXUI: Initialize the screen
 				string userChoice; // FTXUI: User choice variable
 				bool proceedToRegister = false; // FTXUI: Proceed to register variable
 
-				auto messageText = text("Login failed. Would you like to register (Y/N)?") | bold | center; // FTXUI: Message text
+				auto messageText = text("\xE2\x9D\x8C Login failed. Would you like to register (Y/N)?") | bold | center; // FTXUI: Message text
 
 				auto yesButton = Button("Yes", [&] { // FTXUI: Yes button action
 					proceedToRegister = true;
@@ -219,7 +221,7 @@ int main() {
 
 			auto submitButton = Button("Login", [&] { // FTXUI: Submit button action
 				if (username.empty() || password.empty()) { // FTXUI: Check if username or password is empty
-					error_message = "Error: Please enter both username and password.";
+					error_message = "\xE2\x9D\x8C Error: Please enter both username and password.";
 					return;
 				}
 				else if (username == "admin" && password == "admin") { // FTXUI: Check if username and password are correct
@@ -227,7 +229,7 @@ int main() {
 					screen.Exit();
 				}
 				else { // FTXUI: Invalid username or password
-					error_message = "Login failed. Invalid username or password.";
+					error_message = "\xE2\x9D\x8C Login failed. Invalid username or password.";
 					loginStatus = false;
 					return;
 				}
@@ -313,7 +315,7 @@ int main() {
 
 							// Validate the balance range
 							if (minBalance > maxBalance) {
-								error_message = "Minimum balance cannot be greater than maximum balance!";
+								error_message = "\xE2\x9D\x8C Minimum balance cannot be greater than maximum balance!";
 								return;
 							}
 
@@ -321,10 +323,10 @@ int main() {
 							screen.Exit();
 						}
 						catch (const std::invalid_argument&) { // FTXUI: Handle invalid input
-							error_message = "Invalid input. Please enter valid numbers for balance.";
+							error_message = "\xE2\x9D\x8C Invalid input. Please enter valid numbers for balance.";
 						}
 						catch (const std::out_of_range&) { // FTXUI: Handle out of range error
-							error_message = "Balance values are too large!";
+							error_message = "\xE2\x9D\x8C Balance values are too large!";
 						}
 						});
 
@@ -369,7 +371,7 @@ int main() {
 
 						// Display the filtered accounts
 						if (filteredAccounts.empty()) { // FTXUI: No accounts found in the specified balance range
-							error_message = "No accounts found in the specified balance range.";
+							error_message = "\xE2\x9D\x8C No accounts found in the specified balance range.";
 							screen.Loop(renderer);
 						}
 						else {
@@ -435,6 +437,7 @@ int main() {
 			}
 				break;
 			}
+			break;
 		}
 
 		default:

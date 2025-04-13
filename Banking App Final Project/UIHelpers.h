@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 // Color codes
 #define RESET "\033[0m"
 #define BOLD "\033[1m"
@@ -9,6 +10,9 @@
 #define MAGENTA "\033[35m"
 #define CYAN "\033[36m"
 #define ORANGE "\033[38;2;255;165;0m"
+
+using namespace std;
+
 // Functions for animated dollar sign logo
 void displayWelcomeAnimation(void);
 void clearScreen(void);
@@ -18,4 +22,4 @@ void printAnimatedDollarSign(int frame, int row, int col);
 void printDollarSign(void);
 // Function for MU logo
 void printMU();
-
+string getRandomFruitEmoji(void); // Function to get a random fruit emoji
