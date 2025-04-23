@@ -48,7 +48,7 @@ cd SSE550_BankingApp
 ```
 
 2. Install dependencies:
-    - Follow the instructions to set up FTXUI here.
+    - Follow the instructions to set up FTXUI [https://github.com/ArthurSonzogni/FTXUI](here).
     - Ensure SQLite3 is installed and properly linked.
 
 3. Compile the application:
