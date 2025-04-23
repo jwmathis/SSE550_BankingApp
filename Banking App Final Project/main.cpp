@@ -23,86 +23,6 @@
 using namespace std;
 using namespace ftxui;
 
-// Merge Sort Functions
-void merge (vector<Bank::acc>& accounts, int low, int mid, int high) { 
-	vector<Bank::acc> temp(high - low + 1);
-
-	int i = low, j = mid + 1, k = 0;
-
-	while (i <= mid && j <= high) {
-		if (accounts[i].balance < accounts[j].balance) {
-			temp[k++] = accounts[i++];
-		}
-		else {
-			temp[k++] = accounts[j++];
-		}
-	}
-
-	while (i <= mid) {
-		temp[k++] = accounts[i++];
-	}
-
-	while (j <= high) {
-		temp[k++] = accounts[j++];
-	}
-
-	for (int i = low; i <= temp.size(); i++) {
-		accounts[low + i] = temp[i];
-	}
-}
-
-// Merge function to merge two halves of the array
-void merge_recurse(vector<Bank::acc>& accounts, int low, int high) {
-	if (low >= high) {
-		return;
-	}
-	
-	int mid = (low + high) / 2;
-	merge_recurse(accounts, low, mid);
-	merge_recurse(accounts, mid + 1, high);
-	merge(accounts, low, mid, high);
-	
-}
-
-// Merge Sort function to sort the array
-void mergeSort(vector<Bank::acc>& accounts, int length) {
-	merge_recurse(accounts, 0, length - 1);
-}
-
-// Binary Search Function
-int findLowerBound(const vector<Bank::acc>& accounts, double minBalance) { // Binary Search: Returns the index of the first account with a balance greater than or equal to minBalance
-	int low = 0, high = accounts.size() - 1;
-	while (low < high) {
-		int mid = low + (high - low) / 2;
-		if (accounts[mid].balance < minBalance) {
-			low = mid + 1;
-		}
-		else {
-			high = mid;
-		}
-	}
-
-	return (accounts[low].balance >= minBalance) ? low : -1;
-}
-
-// Function to filter accounts based on balance range using merge sort and	binary search
-vector<Bank::acc> getAccountsInBalanceRange(vector<Bank::acc>& accounts, double minBalance, double maxBalance) {
-	std::sort(accounts.begin(), accounts.end(), [](const Bank::acc& a, const Bank::acc& b) {
-		return a.balance < b.balance; // Compare based on balance
-		});
-	//mergeSort(accounts, accounts.size());
-
-	int startIdx = findLowerBound(accounts, minBalance);
-	if (startIdx == -1) return {};
-
-	vector<Bank::acc> filteredAccounts;
-	for (int i = startIdx; i < accounts.size() && accounts[i].balance <= maxBalance; i++) {
-		filteredAccounts.push_back(accounts[i]);
-	}
-
-	return filteredAccounts;
-}
-
 // Global variables
 char option[1];
 bool userInput;
@@ -135,14 +55,15 @@ int main() {
 	menuOption.on_enter = screen.ExitLoopClosure(); // FTXUI: Exit loop on enter
 	auto menu = Menu(&MainMenuEntries, &selectedMenuEntry, menuOption); // FTXUI: Main Menu	component
 
+	clearScreen(); // Clear the terminal screen
+	printDollarSign(); // Print the static dollar sign
+	cout << "\n" << WELCOME_MESSAGE << "\n" << endl; // Display welcome message
+	printMU(); // Print the MU logo
+
 	// Display Main menu options
 	while (true) {
 
-		clearScreen(); // Clear the terminal screen
-		printDollarSign(); // Print the static dollar sign
-		cout << "\n" << WELCOME_MESSAGE << "\n" << endl; // Display welcome message
-		printMU(); // Print the MU logo
-
+		selectedMenuEntry = 0; // FTXUI: Reset the selected menu entry
 		screen.Loop(Window("Mercer Bank", menu)); // FTXUI: Display the menu
 
 		selectedMenuEntry += 1; // FTXUI: Increment the selected menu entry for switch case selection
@@ -281,6 +202,7 @@ int main() {
 				auto adminMenu = Menu(&adminMenuEntries, &selectedAdminMenuEntry, adminMenuOption); // FTXUI: Admin menu component
 				bool flag = true; // FTXUI: Flag to control the loop
 			while (flag) {
+				selectedAdminMenuEntry = 0; // FTXUI: Reset the selected admin menu entry
 				screen.Loop(Window("Admin Menu", adminMenu)); // FTXUI: Display the admin menu
 				selectedAdminMenuEntry += 1; // FTXUI: Increment the selected admin menu entry for switch case selection
 				switch (selectedAdminMenuEntry) { // FTXUI: Switch case for admin menu options
@@ -371,7 +293,7 @@ int main() {
 
 						// Display the filtered accounts
 						if (filteredAccounts.empty()) { // FTXUI: No accounts found in the specified balance range
-							error_message = "\xE2\x9D\x8C No accounts found in the specified balance range.";
+							error_message = "\xE2\x9D\x8C No accounts found in the specified balance range."; // \xE2\x9D\x8C Unicode for red cross symbol
 							screen.Loop(renderer);
 						}
 						else {
@@ -409,7 +331,7 @@ int main() {
 						bst.printAccount(*result);
 					}
 					else { // FTXUI: If account is not found
-						cout << "Account not found.\n";
+						cout << "\xE2\x9D\x8C Account not found.\n";
 					}
 					system("pause");
 					system("cls");

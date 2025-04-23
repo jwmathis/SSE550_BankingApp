@@ -412,6 +412,7 @@ void customerMenu(Customer* customer, Bank& bank) {
 		});
 
 	while (whileFlag) {
+		selected = 0; // Reset selected index
 		system("cls");
 		screen.Loop(renderer);
 
@@ -431,22 +432,33 @@ void customerMenu(Customer* customer, Bank& bank) {
 				logoutMessage = "You've been logged out successfully.";
 			}
 			else {
-				logoutMessage = "\xE2\x9D\x8C Error: Could not remove the transaction receipt file.";
+				logoutMessage = "\xE2\x9D\x8C Error: Could not remove the transaction receipt file."; // \xE2\x9D\x8C
 			}
 
-			auto layout = Container::Vertical({
-				Renderer([=] { return text(logoutMessage) | center; }),
-				Button("Back", [&] {
-					logoutScreen.Exit(); // Exit logout screen
-				}),
-				});
-
-			auto renderer = Renderer(layout, [&] {
+			auto logoutMessageRenderer = Renderer([=] {
 				return vbox({
 					text("Logout") | bold | center,
 					separator(),
 					text(logoutMessage) | color(Color::Green),
 					separator(),
+					});
+				});
+
+			// Create the button component and add it to the container
+			auto backButton = Button("Back", [&] {
+				logoutScreen.Exit(); // Exit logout screen
+				});
+
+			auto layout = Container::Vertical({
+				logoutMessageRenderer,
+				backButton,
+				});
+
+			auto renderer = Renderer(layout, [&] {
+				return vbox({
+					logoutMessageRenderer->Render(),
+					separator(),
+					backButton->Render() | center, // Render the button
 					}) | border;
 				});
 
@@ -1101,7 +1113,7 @@ void customerMenu(Customer* customer, Bank& bank) {
 				logoutMessage = "You've been logged out successfully.";
 			}
 			else {
-				logoutMessage = "Error: Could not remove the transaction receipt file.";
+				logoutMessage = "Error: Could not remove the transaction receipt file. Contact customer support.";
 			}
 
 			// Back button to exit or return to the previous screen

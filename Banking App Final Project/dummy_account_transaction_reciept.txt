@@ -1,4 +1,0 @@
-Transaction: U+2705 Deposit successful! New balance: $2011.000000
-------------------------------------------
-Transaction: ✅ Deposit successful! New balance: $2411.000000
-------------------------------------------
