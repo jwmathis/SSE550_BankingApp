@@ -1,21 +1,31 @@
-#include <iostream>
+﻿#include <iostream>
 #include <string>
 #include <algorithm>
 #include <cstdio>
-#include "CustomerMenu.h"
+#include "UIUtilities.h"
 #include "Customer.h"
 #include "SavingsAccount.h"
 #include <ftxui/component/component.hpp> // For button, input, renderer, container, etc
 #include <ftxui/component/screen_interactive.hpp> // For ScreenInteractive
 #include <ftxui/dom/elements.hpp> // For bold, border, text, separator, etc
-#include "UIHelpers.h"
 
+#include <iostream>
+#include <thread>
+#include <chrono>
+#include <conio.h>
+#include "UIUtilities.h"
+
+#define RESET "\033[0m"
+#define GREEN "\033[32m"
+#define ORANGE "\033[38;2;255;165;0m"
+
+using namespace std;
 using namespace ftxui;
 
 // Bank function declarations
 
 // Function to display customer accounts menu
-template <typename T> 
+template <typename T>
 void displayCustomerAccountsMenu(Bank& bank, Customer* customer) {
 	auto screen = ScreenInteractive::TerminalOutput(); // FTXUI: Initialize the screen
 
@@ -75,94 +85,95 @@ void displayCustomerAccountsMenu(Bank& bank, Customer* customer) {
 
 // Function to register a new customer
 void registerCustomer(Bank& bank) {
-  // FTXUI: Initialize the screen
-  auto screen = ScreenInteractive::TerminalOutput();
+	// FTXUI: Initialize the screen
+	auto screen = ScreenInteractive::TerminalOutput();
 
-  // Variables to store customer details
-  string name, username, pin;
+	// Variables to store customer details
+	string name, username, pin;
 
-  // FTXUI: Error message variable
-  string error_message = "";
+	// FTXUI: Error message variable
+	string error_message = "";
 
-  // FTXUI: Input for full legal name
-  auto nameInput = Input(&name, "Full Legal Name: ");
+	// FTXUI: Input for full legal name
+	auto nameInput = Input(&name, "Full Legal Name: ");
 
-  // FTXUI: Input for username
-  auto usernameInput = Input(&username, "Username: ");
+	// FTXUI: Input for username
+	auto usernameInput = Input(&username, "Username: ");
 
-  // FTXUI: Input for PIN
-  auto pinInput = Input(&pin, "PIN: ");
+	// FTXUI: Input for PIN
+	auto pinInput = Input(&pin, "PIN: ");
 
-  // FTXUI: Submit button action
-  auto submitButton = Button("Register", [&] {
-    // Check if PIN is exactly 4 digits
-    if (pin.length() != 4 || !all_of(pin.begin(), pin.end(), ::isdigit)) {
-      // Display error message if PIN is invalid
-      error_message = "\xE2\x9D\x8C Error: PIN must be exactly 4 digits.";
-      return;
-    }
+	// FTXUI: Submit button action
+	auto submitButton = Button("Register", [&] {
+		// Check if PIN is exactly 4 digits
+		if (pin.length() != 4 || !all_of(pin.begin(), pin.end(), ::isdigit)) {
+			// Display error message if PIN is invalid
+			error_message = "\xE2\x9D\x8C Error: PIN must be exactly 4 digits.";
+			return;
+		}
 
-    // Attempt to register the customer with the provided details
-    if (bank.registerCustomer(name, username, pin)) {
-      // If registration is successful, log the customer in and create a new account
-      Customer* customer = bank.login(username, pin);
-      if (customer) {
-        // Exit the registration screen
-        screen.Exit();
-        // Display success message
-        text("You've been registered " + customer->getName() + "! Thanks for signing up!");
-        // Create a new account for the registered customer
-        newCustomer(customer, bank);
-        // Exit the registration screen again (not sure why this is needed)
-        screen.Exit();
-      }
-    } else {
-      // Display error message if registration fails
-      error_message = "\xE2\x9D\x8C Error: Failed to register user. Username already exists.";
-    }
-  });
+		// Attempt to register the customer with the provided details
+		if (bank.registerCustomer(name, username, pin)) {
+			// If registration is successful, log the customer in and create a new account
+			Customer* customer = bank.login(username, pin);
+			if (customer) {
+				// Exit the registration screen
+				screen.Exit();
+				// Display success message
+				text("You've been registered " + customer->getName() + "! Thanks for signing up!");
+				// Create a new account for the registered customer
+				newCustomer(customer, bank);
+				// Exit the registration screen again (not sure why this is needed)
+				screen.Exit();
+			}
+		}
+		else {
+			// Display error message if registration fails
+			error_message = "\xE2\x9D\x8C Error: Failed to register user. Username already exists.";
+		}
+		});
 
-  // FTXUI: Cancel button action
-  auto exitButton = Button("Cancel", [&] { screen.Exit(); });
+	// FTXUI: Cancel button action
+	auto exitButton = Button("Cancel", [&] { screen.Exit(); });
 
-  // FTXUI: Layout for the registration form
-  auto layout = Container::Vertical({
-    nameInput,
-    usernameInput,
-    pinInput,
-    Container::Horizontal({
-      submitButton,
-      exitButton
-    }),
-  });
+	// FTXUI: Layout for the registration form
+	auto layout = Container::Vertical({
+	  nameInput,
+	  usernameInput,
+	  pinInput,
+	  Container::Horizontal({
+		submitButton,
+		exitButton
+	  }),
+		});
 
-  // FTXUI: Renderer for the registration form
-  auto renderer = Renderer(layout, [&] {
-    return vbox({
-      // Display registration form title
-      text("Register New Account") | bold | center,
-      // Display separator
-      separator(),
-      // Display input prompt
-      text("Enter your details below:"),
-      // Display input fields
-      nameInput->Render(),
-      usernameInput->Render(),
-      pinInput->Render(),
-      // Display submit and cancel buttons
-      hbox({
-        submitButton->Render() | center,
-        exitButton->Render() | center,
-      }),
-      // Display error message if any
-      error_message.empty() ? text("") : text(error_message) | color(Color::Red),
-    }) | border;
-  });
+	// FTXUI: Renderer for the registration form
+	auto renderer = Renderer(layout, [&] {
+		return vbox({
+			// Display registration form title
+			text("Register New Account") | bold | center,
+			// Display separator
+			separator(),
+			// Display input prompt
+			text("Enter your details below:"),
+			// Display input fields
+			nameInput->Render(),
+			usernameInput->Render(),
+			pinInput->Render(),
+			// Display submit and cancel buttons
+			hbox({
+			  submitButton->Render() | center,
+			  exitButton->Render() | center,
+			}),
+			// Display error message if any
+			error_message.empty() ? text("") : text(error_message) | color(Color::Red),
+			}) | border;
+		});
 
-  // FTXUI: Loop to display the screen until the user clicks submit or cancel
-  screen.Loop(renderer);
-  // Clear the console
-  system("cls");
+	// FTXUI: Loop to display the screen until the user clicks submit or cancel
+	screen.Loop(renderer);
+	// Clear the console
+	system("cls");
 }
 
 //	Function to create a new customer account
@@ -173,103 +184,106 @@ void registerCustomer(Bank& bank) {
  * @param bank The bank object to interact with.
  */
 void newCustomer(Customer* customer, Bank& bank) {
-  // Clear the console
-  system("cls");
+	// Clear the console
+	system("cls");
 
-  // Initialize the screen for user interaction
-  auto screen = ScreenInteractive::TerminalOutput();
+	// Initialize the screen for user interaction
+	auto screen = ScreenInteractive::TerminalOutput();
 
-  // Variables for user input
-  string initialBalanceString; // Input variable for initial balance
-  double initialBalance; // Double variable for initial balance
-  bool conversion_error = false; // Flag for conversion error
-  string error_message = ""; // Error message variable
+	// Variables for user input
+	string initialBalanceString; // Input variable for initial balance
+	double initialBalance; // Double variable for initial balance
+	bool conversion_error = false; // Flag for conversion error
+	string error_message = ""; // Error message variable
 
-  // Account type options
-  vector<string> accountType = { "Regular", "Savings" };
-  int selectedAccountType = 0; // Default account type selection
+	// Account type options
+	vector<string> accountType = { "Regular", "Savings" };
+	int selectedAccountType = 0; // Default account type selection
 
-  // Create input field for initial balance
-  auto initialBalanceInput = Input(&initialBalanceString, "Initial Balance: ");
+	// Create input field for initial balance
+	auto initialBalanceInput = Input(&initialBalanceString, "Initial Balance: ");
 
-  // Create radio box for account type selection
-  auto accountTypeRadiobox = Radiobox(&accountType, &selectedAccountType);
+	// Create radio box for account type selection
+	auto accountTypeRadiobox = Radiobox(&accountType, &selectedAccountType);
 
-  // Create submit button to create the account
-  auto submitButton = Button("Submit", [&] {
-    try {
-      // Attempt to convert initial balance string to double
-      initialBalance = stod(initialBalanceString);
+	// Create submit button to create the account
+	auto submitButton = Button("Submit", [&] {
+		try {
+			// Attempt to convert initial balance string to double
+			initialBalance = stod(initialBalanceString);
 
-      // Check if initial balance is negative
-      if (initialBalance < 0) {
-        // Display error message
-        error_message = "\xE2\x9D\x8C Invalid input. Your account cannot be created with a negative balance. "
-          "Please enter a positive balance or 0 to create your account.\n";
-        return;
-      }
-    } catch (const std::invalid_argument&) {
-      // Display error message if input is not a valid number
-      error_message = "\xE2\x9D\x8C Invalid input. Please enter a valid number.\n";
-      return;
-    } catch (const std::out_of_range&) {
-      // Display error message if input is too large
-      error_message = "\xE2\x9D\x8C Invalid input. Please enter a smaller number.\n";
-      return;
-    }
+			// Check if initial balance is negative
+			if (initialBalance < 0) {
+				// Display error message
+				error_message = "\xE2\x9D\x8C Invalid input. Your account cannot be created with a negative balance. "
+					"Please enter a positive balance or 0 to create your account.\n";
+				return;
+			}
+		}
+		catch (const std::invalid_argument&) {
+			// Display error message if input is not a valid number
+			error_message = "\xE2\x9D\x8C Invalid input. Please enter a valid number.\n";
+			return;
+		}
+		catch (const std::out_of_range&) {
+			// Display error message if input is too large
+			error_message = "\xE2\x9D\x8C Invalid input. Please enter a smaller number.\n";
+			return;
+		}
 
-    // Get selected account type
-    string selectedType = accountType[selectedAccountType];
+		// Get selected account type
+		string selectedType = accountType[selectedAccountType];
 
-    // Generate a new account number
-    int accountNumber = bank.generateAccountNumber(1);
+		// Generate a new account number
+		int accountNumber = bank.generateAccountNumber(1);
 
-    // Attempt to add the account to the customer
-    if (bank.addAccountForCustomer(customer->getId(), to_string(accountNumber), initialBalance, selectedType)) {
-      // Display success message and account number
-      text("Your Account has been created! Your account number is: " + to_string(accountNumber));
-      system("pause");
-      screen.Exit();
-    } else {
-      // Display error message if account creation fails
-      error_message = "\xE2\x9D\x8C Error: Failed to create account. Please try again.";
-    }
-  });
+		// Attempt to add the account to the customer
+		if (bank.addAccountForCustomer(customer->getId(), to_string(accountNumber), initialBalance, selectedType)) {
+			// Display success message and account number
+			text("Your Account has been created! Your account number is: " + to_string(accountNumber));
+			system("pause");
+			screen.Exit();
+		}
+		else {
+			// Display error message if account creation fails
+			error_message = "\xE2\x9D\x8C Error: Failed to create account. Please try again.";
+		}
+		});
 
-  // Create cancel button to exit the screen
-  auto exitButton = Button("Cancel", [&] { screen.Exit(); });
+	// Create cancel button to exit the screen
+	auto exitButton = Button("Cancel", [&] { screen.Exit(); });
 
-  // Create layout for the screen
-  auto layout = Container::Vertical({
-    initialBalanceInput,
-    accountTypeRadiobox,
-    Container::Horizontal({
-      submitButton,
-      exitButton
-    }),
-  });
+	// Create layout for the screen
+	auto layout = Container::Vertical({
+	  initialBalanceInput,
+	  accountTypeRadiobox,
+	  Container::Horizontal({
+		submitButton,
+		exitButton
+	  }),
+		});
 
-  // Create renderer for the screen
-  auto renderer = Renderer(layout, [&] {
-    return vbox({
-      text("Open New Account") | bold | center,
-      separator(),
-      text("Enter the initial balance for your new account below:"),
-      initialBalanceInput->Render(),
-      accountTypeRadiobox->Render(),
-      hbox({
-        submitButton->Render() | center,
-        exitButton->Render() | center,
-      }),
-      error_message.empty() ? text("") : text(error_message) | color(Color::Red),
-    }) | border;
-  });
+	// Create renderer for the screen
+	auto renderer = Renderer(layout, [&] {
+		return vbox({
+		  text("Open New Account") | bold | center,
+		  separator(),
+		  text("Enter the initial balance for your new account below:"),
+		  initialBalanceInput->Render(),
+		  accountTypeRadiobox->Render(),
+		  hbox({
+			submitButton->Render() | center,
+			exitButton->Render() | center,
+		  }),
+		  error_message.empty() ? text("") : text(error_message) | color(Color::Red),
+			}) | border;
+		});
 
-  // Loop the screen until the user exits
-  screen.Loop(renderer);
+	// Loop the screen until the user exits
+	screen.Loop(renderer);
 
-  // Clear the console
-  system("cls");
+	// Clear the console
+	system("cls");
 }
 
 /**
@@ -279,85 +293,86 @@ void newCustomer(Customer* customer, Bank& bank) {
  * @return True if the login is successful, false otherwise.
  */
 bool loginCustomer(Bank& bank) {
-  // Initialize the screen for user interaction
-  auto screen = ScreenInteractive::TerminalOutput();
+	// Initialize the screen for user interaction
+	auto screen = ScreenInteractive::TerminalOutput();
 
-  // Variables for user input
-  string username, pin;
-  bool loginStatus = false; // Flag to track login status
-  string error_message = ""; // Error message variable
-  Customer* customer = nullptr; // Customer object to store logged-in customer
+	// Variables for user input
+	string username, pin;
+	bool loginStatus = false; // Flag to track login status
+	string error_message = ""; // Error message variable
+	Customer* customer = nullptr; // Customer object to store logged-in customer
 
-  // Create input fields for username and PIN
-  auto usernameInput = Input(&username, "Username: ");
-  auto pinInput = Input(&pin, "PIN: ");
+	// Create input fields for username and PIN
+	auto usernameInput = Input(&username, "Username: ");
+	auto pinInput = Input(&pin, "PIN: ");
 
-  // Create submit button to attempt login
-  auto submitButton = Button("Login", [&] {
-    // Check if both username and PIN are entered
-    if (username.empty() || pin.empty()) {
-      // Display error message
-      error_message = "\xE2\x9D\x8C Error: Please enter both username and PIN.";
-      return;
-    }
+	// Create submit button to attempt login
+	auto submitButton = Button("Login", [&] {
+		// Check if both username and PIN are entered
+		if (username.empty() || pin.empty()) {
+			// Display error message
+			error_message = "\xE2\x9D\x8C Error: Please enter both username and PIN.";
+			return;
+		}
 
-    // Attempt to log in the customer
-    customer = bank.login(username, pin);
-    if (!customer) {
-      // Display error message if login fails
-      error_message = "\xE2\x9D\x8C Login failed. Invalid username or PIN.";
-      loginStatus = false;
-      return;
-    } else {
-      // Set login status to true and exit the screen
-      loginStatus = true;
-      screen.Exit();
-    }
-  });
+		// Attempt to log in the customer
+		customer = bank.login(username, pin);
+		if (!customer) {
+			// Display error message if login fails
+			error_message = "\xE2\x9D\x8C Login failed. Invalid username or PIN.";
+			loginStatus = false;
+			return;
+		}
+		else {
+			// Set login status to true and exit the screen
+			loginStatus = true;
+			screen.Exit();
+		}
+		});
 
-  // Create cancel button to exit the screen
-  auto exitButton = Button("Cancel", [&] { loginStatus = false; screen.Exit(); });
+	// Create cancel button to exit the screen
+	auto exitButton = Button("Cancel", [&] { loginStatus = false; screen.Exit(); });
 
-  // Create layout for the screen
-  auto layout = Container::Vertical({
-    usernameInput,
-    pinInput,
-    Container::Horizontal({
-      submitButton,
-      exitButton
-    }),
-  });
+	// Create layout for the screen
+	auto layout = Container::Vertical({
+	  usernameInput,
+	  pinInput,
+	  Container::Horizontal({
+		submitButton,
+		exitButton
+	  }),
+		});
 
-  // Create renderer for the screen
-  auto renderer = Renderer(layout, [&] {
-    return vbox({
-      text("Customer Login") | bold | center,
-      separator(),
-      text("Enter your username and PIN below:"),
-      usernameInput->Render(),
-      pinInput->Render(),
-      hbox({
-        submitButton->Render() | center,
-        exitButton->Render() | center,
-      }),
-      error_message.empty() ? text("") : text(error_message) | color(Color::Red),
-    })
-    | border;
-  });
+	// Create renderer for the screen
+	auto renderer = Renderer(layout, [&] {
+		return vbox({
+		  text("Customer Login") | bold | center,
+		  separator(),
+		  text("Enter your username and PIN below:"),
+		  usernameInput->Render(),
+		  pinInput->Render(),
+		  hbox({
+			submitButton->Render() | center,
+			exitButton->Render() | center,
+		  }),
+		  error_message.empty() ? text("") : text(error_message) | color(Color::Red),
+			})
+			| border;
+		});
 
-  // Loop the screen until the user exits
-  screen.Loop(renderer);
+	// Loop the screen until the user exits
+	screen.Loop(renderer);
 
-  // Clear the console
-  system("cls");
+	// Clear the console
+	system("cls");
 
-  // If login is successful, display the customer menu
-  if (loginStatus) {
-    customerMenu<double>(customer, bank);
-  }
+	// If login is successful, display the customer menu
+	if (loginStatus) {
+		customerMenu<double>(customer, bank);
+	}
 
-  // Return the login status
-  return loginStatus; // Login successful
+	// Return the login status
+	return loginStatus; // Login successful
 }
 
 template <typename T>
@@ -1146,4 +1161,204 @@ void customerMenu(Customer* customer, Bank& bank) {
 		}
 		}
 	}
+}
+
+void displayWelcomeAnimation() {
+	const int frames = 6; // Total number of frames for the spin
+	bool exitFlag = false;
+	while (!exitFlag) {
+		for (int i = 0; i < frames; ++i) {
+			//clearScreen(); // Clear the console
+			printAnimatedDollarSign(i, 5, 20); // Print the current frame
+			std::this_thread::sleep_for(std::chrono::milliseconds(150)); // Pause for a moment
+
+			if (_kbhit()) {
+				char ch = _getch();
+				if (ch == 13) { //ASCII for enter key
+					exitFlag = true;
+					break;
+				}
+			}
+		}
+	}
+}
+// Functions for animated dollar sign logo
+void clearScreen() {
+	// This works for Windows; for UNIX, use "clear"
+	system("cls");
+}
+
+void moveToPosition(int row, int col) {
+	cout << "\033[" << row << ";" << col << "H";
+}
+
+void printAnimatedDollarSign(int frame, int row, int col) {
+	cout << GREEN;
+	moveToPosition(row, col);
+	switch (frame) {
+	case 0: // Initial frame
+		cout << "				      $$$$       " << endl;
+		moveToPosition(row + 1, col);
+		cout << "				    $$$  $$$     " << endl;
+		moveToPosition(row + 2, col);
+		cout << "				   $$      $$    " << endl;
+		moveToPosition(row + 3, col);
+		cout << "				   $$            " << endl;
+		moveToPosition(row + 4, col);
+		cout << "				    $$$$$$       " << endl;
+		moveToPosition(row + 5, col);
+		cout << "				         $$      " << endl;
+		moveToPosition(row + 6, col);
+		cout << "				   $$      $$    " << endl;
+		moveToPosition(row + 7, col);
+		cout << "				    $$$  $$$     " << endl;
+		moveToPosition(row + 8, col);
+		cout << "				      $$$$       " << endl;
+		break;
+	case 1: // Slight rotation
+		cout << "				       $$        " << endl;
+		moveToPosition(row + 1, col);
+		cout << "				      $$$$       " << endl;
+		moveToPosition(row + 2, col);
+		cout << "				    $$$  $$$     " << endl;
+		moveToPosition(row + 3, col);
+		cout << "				   $$      $$    " << endl;
+		moveToPosition(row + 4, col);
+		cout << "				   $$            " << endl;
+		moveToPosition(row + 5, col);
+		cout << "				    $$$$$$       " << endl;
+		moveToPosition(row + 6, col);
+		cout << "				         $$      " << endl;
+		moveToPosition(row + 7, col);
+		cout << "				   $$      $$    " << endl;
+		moveToPosition(row + 8, col);
+		cout << "				    $$$  $$$     " << endl;
+		break;
+	case 2: // More rotation
+		cout << "				       $$        " << endl;
+		moveToPosition(row + 1, col);
+		cout << "				       $$        " << endl;
+		moveToPosition(row + 2, col);
+		cout << "				      $$$$       " << endl;
+		moveToPosition(row + 3, col);
+		cout << "				    $$$  $$$     " << endl;
+		moveToPosition(row + 4, col);
+		cout << "				   $$      $$    " << endl;
+		moveToPosition(row + 5, col);
+		cout << "				   $$            " << endl;
+		moveToPosition(row + 6, col);
+		cout << "				    $$$$$$       " << endl;
+		moveToPosition(row + 7, col);
+		cout << "				         $$      " << endl;
+		moveToPosition(row + 8, col);
+		cout << "				   $$      $$    " << endl;
+		break;
+	case 3: // Further rotation
+		cout << "				         $$      " << endl;
+		moveToPosition(row + 1, col);
+		cout << "				       $$        " << endl;
+		moveToPosition(row + 2, col);
+		cout << "				       $$        " << endl;
+		moveToPosition(row + 3, col);
+		cout << "				      $$$$       " << endl;
+		moveToPosition(row + 4, col);
+		cout << "				    $$$  $$$     " << endl;
+		moveToPosition(row + 5, col);
+		cout << "				   $$      $$    " << endl;
+		moveToPosition(row + 6, col);
+		cout << "				   $$            " << endl;
+		moveToPosition(row + 7, col);
+		cout << "				    $$$$$$       " << endl;
+		moveToPosition(row + 8, col);
+		cout << "				         $$      " << endl;
+		break;
+	case 4: // Almost back to original
+		cout << "				   $$      $$    " << endl;
+		moveToPosition(row + 1, col);
+		cout << "				         $$      " << endl;
+		moveToPosition(row + 2, col);
+		cout << "				       $$        " << endl;
+		moveToPosition(row + 3, col);
+		cout << "				       $$        " << endl;
+		moveToPosition(row + 4, col);
+		cout << "				      $$$$       " << endl;
+		moveToPosition(row + 5, col);
+		cout << "				    $$$  $$$     " << endl;
+		moveToPosition(row + 6, col);
+		cout << "				  $$      $$    " << endl;
+		moveToPosition(row + 7, col);
+		cout << "				   $$            " << endl;
+		break;
+	case 5: // Back to original position but flipped
+		cout << "				      $$$$       " << endl;
+		moveToPosition(row + 1, col);
+		cout << "				    $$$  $$$     " << endl;
+		moveToPosition(row + 2, col);
+		cout << "				   $$      $$    " << endl;
+		moveToPosition(row + 3, col);
+		cout << "				         $$      " << endl;
+		moveToPosition(row + 4, col);
+		cout << "				    $$$$$$       " << endl;
+		moveToPosition(row + 5, col);
+		cout << "				   $$            " << endl;
+		moveToPosition(row + 6, col);
+		cout << "				   $$      $$    " << endl;
+		moveToPosition(row + 7, col);
+		cout << "				    $$$  $$$     " << endl;
+		moveToPosition(row + 8, col);
+		cout << "				      $$$$       " << endl;
+		break;
+	}
+	cout << RESET;
+}
+
+void printDollarSign() {
+	cout << GREEN;
+	cout << "		                                          $$        " << endl;
+	cout << "		                                         $$$$       " << endl;
+	cout << "		                                       $$$  $$$     " << endl;
+	cout << "		                                      $$  $$  $$    " << endl;
+	cout << "		                                      $$  $$          " << endl;
+	cout << "		                                       $$$$$$$$$       " << endl;
+	cout << "		                                          $$   $$      " << endl;
+	cout << "		                                      $$  $$   $$    " << endl;
+	cout << "		                                       $$$  $$$     " << endl;
+	cout << "		                                         $$$$       " << endl;
+	cout << "		                                          $$        " << endl;
+	cout << RESET;
+}
+
+// Function for MU logo
+void printMU() {
+	cout << ORANGE << endl;
+	// Print the letter M and U side by side
+	cout << "					     ||\\\\      //||   ||       || " << endl;  // Row 1
+	cout << "					     || \\\\    // ||   ||       || " << endl;  // Row 2
+	cout << "					     ||  \\\\  //  ||   ||       || " << endl;  // Row 3
+	cout << "					     ||   \\\\//   ||   ||       || " << endl;  // Row 4
+	cout << "					     ||          ||   ||       || " << endl;  // Row 5
+	cout << "		                             ||          ||   ===========" << endl;  // Row 6
+	cout << RESET;
+}
+
+string getRandomFruitEmoji() {
+	// List of fruit emojis in UTF-8
+	std::vector<std::string> fruitEmojis = {
+		"\xF0\x9F\x8D\x8C", // 🍌 Banana
+		"\xF0\x9F\x8D\x8D", // 🍍 Pineapple
+		"\xF0\x9F\x8D\x8E", // 🍎 Red Apple
+		"\xF0\x9F\x8D\x8F", // 🍏 Green Apple
+		"\xF0\x9F\x8D\x90", // 🍐 Pear
+		"\xF0\x9F\x8D\x91", // 🍑 Peach
+		"\xF0\x9F\x8D\x92", // 🍒 Cherries
+		"\xF0\x9F\x8D\x93", // 🍓 Strawberry
+		"\xF0\x9F\xA5\x91"  // 🥑 Avocado
+	};
+
+	// Generate a random index
+	std::srand(std::time(nullptr)); // Seed for randomness
+	int randomIndex = std::rand() % fruitEmojis.size();
+
+	// Return a random fruit emoji
+	return fruitEmojis[randomIndex];
 }

@@ -137,25 +137,23 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Bank.cpp" />
-    <ClCompile Include="CustomerMenu.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Customer.cpp" />
     <ClCompile Include="sqlite3.c" />
     <ClCompile Include="SQLiteFunctions.cpp" />
-    <ClCompile Include="UIHelpers.cpp" />
+    <ClCompile Include="UIUtilities.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Account.h" />
     <ClInclude Include="Admin.h" />
     <ClInclude Include="Bank.h" />
     <ClInclude Include="Customer.h" />
-    <ClInclude Include="CustomerMenu.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SavingsAccount.h" />
     <ClInclude Include="sqlite3.h" />
     <ClInclude Include="SQLiteFunctions.h" />
     <ClInclude Include="Transfer.h" />
-    <ClInclude Include="UIHelpers.h" />
+    <ClInclude Include="UIUtilities.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Banking App Final Project.rc" />

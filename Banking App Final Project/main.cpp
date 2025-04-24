@@ -1,13 +1,19 @@
-// Banking App Final Project.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
+/**
+* @file main.cpp
+* @brief Main entry point for the Mercer Bank application with FTXUI integration.
+* 
+* This file contains the implementation of the CLI-based banking application
+* featuring FTXUI for the user interface. It includes the main menu, user registration,
+* login, and admin functions. The application interacts with SQLite for database management.
+*/
+
 
 #include <iostream>
 #include <string>
 #include <functional>
 #include <vector>
 #include "SQLiteFunctions.h"
-#include "UIHelpers.h"
-#include "CustomerMenu.h"
+#include "UIUtilities.h"
 #include "Bank.h"
 #include "Admin.h"
 
@@ -24,17 +30,45 @@ using namespace std;
 using namespace ftxui;
 
 // Global variables
+/**
+* @brief User option input buffer
+*/
 char option[1];
+
+/**
+* @brief Flag to track user input.
+*/
 bool userInput;
+/**
+* @brief User's menu choice.
+*/
 int choice;
+/**
+* @brief Path to the SQLite database file.
+*/
 const char* databaseDir = "MercerBank.db";
 
-// FTXUI: Function to create a window with a title and component
+/**
+*@brief Creates a styled window with a title and a component.
+*
+* @param title The title of the window.
+* @param component The FTXUI component to be displayed inside the window.
+* @return An FTXUI component representing the styled window.
+*/
 Component Window(string title, Component component) {
 	return Renderer(component, [component, title] {
 		return window(text(title), component->Render()) | flex;
 	});
 }
+
+/**
+ * @brief Entry point for the Mercer Bank application.
+ *
+ * This function initializes the banking system, sets up the main menu, and
+ * handles user interactions for both customer and admin functionalities.
+ *
+ * @return int Returns 0 on successful execution.
+ */
 int main() {
 	Bank MercerBank(databaseDir); //initialize bank and database
 	bool exitFlag = false;
