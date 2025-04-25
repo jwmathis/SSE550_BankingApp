@@ -96,7 +96,7 @@ int main() {
 
 	// Display Main menu options
 	while (true) {
-
+		system("cls");
 		selectedMenuEntry = 0; // FTXUI: Reset the selected menu entry
 		screen.Loop(Window("Mercer Bank", menu)); // FTXUI: Display the menu
 
